@@ -24,9 +24,31 @@ def get_posts():
     return response.json(dict(posts=posts, looged_in=logged_in, has_more=has_more,))
 
 
+def get_threads():
+    start_idx = int(request.vars.start_idx) if request.vars.start_idx is not None else 0
+    end_idx = int(request.vars.end_idx) if request.vars.end_idx is not None else 0
+    threads = []
+    has_more = False
+    rows = db().select(db.thread.ALL, limitby=(start_idx, end_idx + 1), orderby=db.thread.id)
+
+    for i, r in enumerate(rows):
+        if i < end_idx - start_idx:
+            m = dict(
+                id = r.id,
+                title = r.title,
+                category = r.category.split(','),
+                date = r.created_on
+            )
+            threads.append(m)
+        else:
+            has_more = True
+    logged_in = auth.user is not None
+    return response.json(dict(threads=threads, looged_in=logged_in, has_more=has_more,))
+
+
 @auth.requires_signature()
 def add_post():
-    m_id = db.checklist.insert(
+    m_id = db.post.insert(
         cont = request.vars.content,
         thread_id = request.vars.thread_id
     )

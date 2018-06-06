@@ -18,26 +18,34 @@ div.add_btn a {
 }
 
 /* line 16, ../sass/_main.scss */
-div.memo {
+div.post {
   margin: 5px;
   border: 2px solid gray;
   padding: 5px;
 }
 /* line 21, ../sass/_main.scss */
-div.memo div.memo_title {
+div.post div.memo_title {
   font-weight: bold;
   font-size: 150%;
 }
 /* line 25, ../sass/_main.scss */
-div.memo div.button_list {
+div.post div.post_author {
   text-align: right;
   margin-top: 10px;
 }
 /* line 27, ../sass/_main.scss */
-div.memo div.button_list div.buttons {
+div.post div.button_list div.buttons {
   display: inline-block;
 }
 /* line 31, ../sass/_main.scss */
-div.memo div.button_list a.btn {
+div.post div.button_list a.btn {
   padding: 10px;
+}
+
+table#thread_selector {
+  border: 1px solid gray;
+}
+/* line 11, ../sass/_main.scss */
+table#thread_selector tbody tr {
+  border-bottom: 1px solid gray;
 }

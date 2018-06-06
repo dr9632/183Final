@@ -20,3 +20,10 @@
   padding: 20px;
   @include border-radius(16px);
 }
+
+table#thread_selector {
+  border: 1px solid gray;
+  tbody tr {
+    border-bottom: 1px solid gray;
+  }
+}

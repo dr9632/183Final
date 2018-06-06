@@ -3,10 +3,10 @@
 {{block head}}
 <script src="{{=URL('static', 'js/vue.js')}}"></script>
 <script>
-    var posts_url = "{{=URL('api', 'get_memos', hash_vars=False)}}";
+    var posts_url = "{{=URL('api', 'get_posts', hash_vars=False)}}";
     var threads_url = "{{=URL('api', 'get_threads', hash_vars=False)}}";
-    var creatae_thread_url = "{{=URL('api', 'create_thread', user_signature=True)}}";
-    var add_post_url = "{{=URL('api', 'add_memo', user_signature=True)}}";
+    var create_thread_url = "{{=URL('api', 'create_thread', user_signature=True)}}";
+    var add_post_url = "{{=URL('api', 'add_post', user_signature=True)}}";
 </script>
 {{end}}
 
@@ -16,7 +16,7 @@
         <div class="container padded">
             <div class="threequarters" v-if="!is_creating">
                 {{if auth.user:}}
-                <!-- Add memo form -->
+                <!-- Add form -->
                 <div v-if="is_adding" id="add_post_div">
                     <form action="#" v-on:submit.prevent="add_post(curr_thread_id)" class="form-horizontal" enctype="multipart/form-data" method="post">
                         <div class="form-group" id="no_table_memo__row">
@@ -46,10 +46,8 @@
                 <div v-for="post in posts">
                     <!-- Post print -->
                     <div class="post">
-                        <div class="post_text">
-                          <div class="post_content">${post.content}</div>
-                           <div class="post_author">Author: ${post.user_name} | Date posted: ${post.date}</div>
-                        </div>
+                        <div class="post_content">${post.content}</div>
+                        <div class="post_author">Author: ${post.user_name} | Date posted: ${post.date}</div>
                     </div>
                 </div>
 
@@ -115,6 +113,14 @@
                             </div>
                         </div>
                     </form>
+                <div class="button_bar">
+                    <button class="btn" v-on:click="create_thread()">
+                        <i class="fa fa-check"></i> Create and start
+                    </button>
+                    <button v-if="is_adding" class="btn" v-on:click="cancel_create_thread()">
+                        <i class="fa fa-times"></i> Cancel
+                    </button>
+                </div>
             </div>
 
             <div class="quarter right">

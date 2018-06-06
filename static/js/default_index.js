@@ -71,7 +71,7 @@ var app = function() {
 
     self.is_selected = function (id) {
         if (self.vue.curr_thread_id==id)
-            return 'background-color: teal;';
+            return 'background-color: teal; color: #fff;';
     }
 
     self.add_post_button = function () {
@@ -110,7 +110,7 @@ var app = function() {
 
     self.add_cate = function (cate) {
         if (!self.is_cate(cate)) {
-            self.vue.form_thread_category.push(cate);
+            self.vue.form_thread_category.unshift(cate);
             enumerate(self.vue.form_thread_category);
         }
         self.vue.form_thread_temp = "";
@@ -119,14 +119,15 @@ var app = function() {
     self.rmv_cate = function (cate_idx) {
          self.vue.form_thread_category.splice(cate_idx, 1);
          enumerate(self.vue.form_thread_category);
-         console.log("rmved element");
+         console.log("rmved element remaining cates");
+         console.log(self.vue.form_thread_category);
     };
 
     self.create_thread = function () {
         $.post(create_thread_url,
             {
                 title: self.vue.form_thread_title,
-                category: self.vue.form_thread_category
+                category: self.vue.form_thread_category.toString()
             },
             function (data) {
                 $.web2py.enableElement($("#add_thread_submit"));
@@ -167,7 +168,7 @@ var app = function() {
             curr_thread_id: -1
         },
         methods: {
-            get_post: self.get_posts,
+            get_posts: self.get_posts,
             get_more: self.get_more,
             thread_get_more: self.thread_get_more,
             is_selected: self.is_selected,
