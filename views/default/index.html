@@ -66,47 +66,53 @@
                 <h3><i class="fa fa-book"></i> Create New Story Thread</h3><br/>
                 <form action="#" v-on:submit.prevent="create_thread()" class="form-horizontal" enctype="multipart/form-data" method="post">
                         <div class="form-group" id="no_table_memo__row">
-                            <div style="line-height: 150%">
-                                <input class="form-control string" id="no_table_title" v-model="form_thread_title" placeholder="Title of the story" type="text" style=""/>
-                                <label class="quarter left" style="text-align:center; padding: 2">Choose Category:</label>
-                                    <select class="threequarters right" id="no_table_cate" v-model="form_thread_category">
-                                        <option value="action">Action</option>
-                                        <option value="adventure">Adventure</option>
-                                        <option value="apocalyptic">Apocalyptic</option>
-                                        <option value="children">Children's</option>
-                                        <option value="comedy">Comedy</option>
-                                        <option value="contemporary">Contemporary</option>
-                                        <option value="crime">Crime</option>
-                                        <option value="dark">Dark</option>
-                                        <option value="drama">Drama</option>
-                                        <option value="epic">Epic</option>
-                                        <option value="experimental">Experimental</option>
-                                        <option value="fairy_tale">Fairy tale</option>
-                                        <option value="fan_fic">Fan fiction</option>
-                                        <option value="fantasy">Fantasy</option>
-                                        <option value="historic">Historic</option>
-                                        <option value="horror">Horror</option>
-                                        <option value="humor">Humor</option>
-                                        <option value="meta">Meta</option>
-                                        <option value="mystery">Mystery</option>
-                                        <option value="nsfw">! NSFW !</option>
-                                        <option value="philosophic">Philosophic</option>
-                                        <option value="political">Political</option>
-                                        <option value="romance">Romance</option>
-                                        <option value="satire">Satire</option>
-                                        <option value="school">School</option>
-                                        <option value="sci_fi">Science fiction</option>
-                                        <option value="spiritual">Spiritual</option>
-                                        <option value="sports">Sports</option>
-                                        <option value="thriller">Thriller</option>
-                                        <option value="tragedy">Tragedy</option>
-                                        <option value="urban">Urban</option>
-                                        <option value="western">Western</option>
-                                        <option value="young_adult">Young adult</option>
-                                    </select>
+                            <div>
+                                <input class="form-control string fill" id="no_table_title" v-model="form_thread_title" placeholder="Title of the story" type="text"/>
                                 <span class="help-block"></span>
                             </div>
-                            <div class="tags dismissible"><span class="teal">one</span><span>two</span><span class="off">three</span></div>
+                            <div style="padding-top: 10px;">
+                                <label class="left">Choose Category: <span style="color: #959595; font-size: 12px;">(* hit enter to add)</span></label>
+                                <input class="fill" type="text" list="no_table_cate" v-model="form_thread_temp" v-on:keyup.enter="add_cate(form_thread_temp)">
+                                <datalist class="fill" id="no_table_cate">
+                                    <option data-value="Action">Action</option>
+                                    <option data-value="Adventure">Adventure</option>
+                                    <option data-value="Apocalyptic">Apocalyptic</option>
+                                    <option data-value="Children">Children's</option>
+                                    <option data-value="Comedy">Comedy</option>
+                                    <option data-value="Contemporary">Contemporary</option>
+                                    <option data-value="Crime">Crime</option>
+                                    <option data-value="Dark">Dark</option>
+                                    <option data-value="Drama">Drama</option>
+                                    <option data-value="Epic">Epic</option>
+                                    <option data-value="Experimental">Experimental</option>
+                                    <option data-value="Fairy_tale">Fairy tale</option>
+                                    <option data-value="Fanfic">Fan fiction</option>
+                                    <option data-value="Fantasy">Fantasy</option>
+                                    <option data-value="Historic">Historic</option>
+                                    <option data-value="Horror">Horror</option>
+                                    <option data-value="Humor">Humor</option>
+                                    <option data-value="Meta">Meta</option>
+                                    <option data-value="Mystery">Mystery</option>
+                                    <option data-value="NSFW">! NSFW !</option>
+                                    <option data-value="Philosophic">Philosophic</option>
+                                    <option data-value="Political">Political</option>
+                                    <option data-value="Romance">Romance</option>
+                                    <option data-value="Satire">Satire</option>
+                                    <option data-value="School">School</option>
+                                    <option data-value="Scifi">Science fiction</option>
+                                    <option data-value="Spiritual">Spiritual</option>
+                                    <option data-value="Sports">Sports</option>
+                                    <option data-value="Thriller">Thriller</option>
+                                    <option data-value="Tragedy">Tragedy</option>
+                                    <option data-value="Urban">Urban</option>
+                                    <option data-value="Western">Western</option>
+                                    <option data-value="YA">Young adult</option>
+                                </datalist>
+                                <span class="help-block"></span>
+                                <div class="tags dismissible" style="margin-top: 12px;"><span class="teal" v-for="cate in form_thread_category">
+                                    <span v-on:click="rmv_cate(cate._idx)">${cate}</span>
+                                </span></div>
+                            </div>
                         </div>
                     </form>
             </div>

@@ -104,6 +104,24 @@ var app = function() {
           self.vue.is_creating = true;
     };
 
+    self.is_cate = function (cate) {
+        return self.vue.form_thread_category.includes(cate);
+    };
+
+    self.add_cate = function (cate) {
+        if (!self.is_cate(cate)) {
+            self.vue.form_thread_category.push(cate);
+            enumerate(self.vue.form_thread_category);
+        }
+        self.vue.form_thread_temp = "";
+    };
+
+    self.rmv_cate = function (cate_idx) {
+         self.vue.form_thread_category.splice(cate_idx, 1);
+         enumerate(self.vue.form_thread_category);
+         console.log("rmved element");
+    };
+
     self.create_thread = function () {
         $.post(create_thread_url,
             {
@@ -116,7 +134,8 @@ var app = function() {
                 self.vue.threads.unshift(data.thread);
                 enumerate(self.vue.threads);
                 self.vue.form_thread_title = "";
-                self.vue.form_thread_category = "";
+                self.vue.form_thread_category = [];
+                self.vue.form_thread_temp = "";
                 $.web2py.flash("New story thread created!");
             });
     };
@@ -124,7 +143,8 @@ var app = function() {
     self.cancel_create_thread = function () {
         self.vue.is_creating = false;
         self.vue.form_thread_title = "";
-        self.vue.form_thread_category = "";
+        self.vue.form_thread_category = [];
+        self.vue.form_thread_temp = "";
     };
 
     // Complete as needed.
@@ -142,7 +162,8 @@ var app = function() {
             thread_has_more: false,
             form_content: null,
             form_thread_title: null,
-            form_thread_category: null,
+            form_thread_category: [],
+            form_thread_temp: "",
             curr_thread_id: -1
         },
         methods: {
@@ -154,6 +175,9 @@ var app = function() {
             add_post: self.add_post,
             cancel_add_post: self.cancel_add_post,
             create_thread_button: self.create_thread_button,
+            is_cate: self.is_cate,
+            add_cate: self.add_cate,
+            rmv_cate: self.rmv_cate,
             create_thread: self.create_thread,
             cancel_create_thread: self.cancel_create_thread
         }
