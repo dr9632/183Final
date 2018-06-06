@@ -1,0 +1,84 @@
+{{extend 'layout.html'}}
+
+{{block head}}
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+<script>
+    var posts_url = "{{=URL('api', 'get_memos', hash_vars=False)}}";
+    var threads_url = "{{=URL('api', 'get_threads', hash_vars=False)}}";
+    var creatae_thread_url = "{{=URL('api', 'create_thread', user_signature=True)}}";
+    var add_post_url = "{{=URL('api', 'add_memo', user_signature=True)}}";
+</script>
+{{end}}
+
+<div class="main_content">
+
+    <div id="vue-div" class="display:none">
+        <div class="container padded">
+            <div class="threequarters" v-if="!is_creating">
+                {{if auth.user:}}
+                <!-- Add memo form -->
+                <div v-if="is_adding" id="add_post_div">
+                    <form action="#" v-on:submit.prevent="add_post(curr_thread_id)" class="form-horizontal" enctype="multipart/form-data" method="post">
+                        <div class="form-group" id="no_table_memo__row">
+                            <div>
+                                <textarea class="form-control string" id="no_table_post" v-model="form_content" placeholder="Story continues on..." type="text">
+                                </textarea>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Buttons -->
+                <div class="button_bar" v-if="curr_thread_id > -1">
+                    <button v-if="!is_adding" class="btn" v-on:click="add_post_button()">
+                        <i class="fa fa-plus"></i> Continue this story
+                    </button>
+                    <button v-if="is_adding" class="btn" v-on:click="add_post(curr_thread_id)">
+                        <i class="fa fa-pencil-square-o"></i> Add
+                    </button>
+                    <button v-if="is_adding" class="btn" v-on:click="cancel_add_post()">
+                        <i class="fa fa-times"></i> Cancel
+                    </button>
+                </div>
+                {{pass}}
+
+                <div v-for="post in posts">
+                    <!-- Post print -->
+                    <div class="post">
+                        <div class="post_text">
+                          <div class="post_content">${post.content}</div>
+                           <div class="post_author">Author: ${post.user_name} | Date posted: ${post.date}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Get more -->
+                <div v-if="has_more" class="show_more" align="center">
+                    <button class="btn btn-default rounded" v-on:click="get_more()">
+                        <i class="fa fa-ellipsis-h"></i> Load more
+                    </button>
+                </div>
+            </div>
+
+            <div class="threequarters" v-if="is_creating">
+                create threead
+            </div>
+
+            <div class="quarter right">
+                {{if auth.user:}}
+                    <button v-on:click="create_thread_button()"><i class="fa fa-book"></i> Start a new story</button>
+                {{pass}}
+                <table class="fill" id="thread_selector">
+                  <tbody>
+                    <!-- One row for each threads. -->
+                    <tr v-for="thread in threads">
+                        <td v-on:click="get_posts(thread.id)" v-bind:style="is_selected(thread.id)">${thread.title}</td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+<script src="{{=URL('static', 'js/default_index.js')}}"></script>
