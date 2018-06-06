@@ -105,3 +105,14 @@ CREATE TABLE "thread"(
 );
 success!
 success!
+timestamp: 2018-06-05T22:08:58.788000
+CREATE TABLE "web2py_session_183Final"(
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "locked" CHAR(1),
+    "client_ip" CHAR(64),
+    "created_datetime" TIMESTAMP,
+    "modified_datetime" TIMESTAMP,
+    "unique_key" CHAR(64),
+    "session_data" BLOB
+);
+success!

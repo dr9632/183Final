@@ -25,6 +25,7 @@ var app = function() {
     }
 
     self.get_posts = function (thread_id) {
+        self.vue.curr_thread_id = thread_id;
         $.getJSON(get_posts_url(0, 10, thread_id), function (data) {
             self.vue.posts = data.posts;
             self.vue.has_more = data.has_more;

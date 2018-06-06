@@ -61,8 +61,54 @@
                 </div>
             </div>
 
+            <!-- Create thread -->
             <div class="threequarters" v-if="is_creating">
-                create threead
+                <h3><i class="fa fa-book"></i> Create New Story Thread</h3><br/>
+                <form action="#" v-on:submit.prevent="create_thread()" class="form-horizontal" enctype="multipart/form-data" method="post">
+                        <div class="form-group" id="no_table_memo__row">
+                            <div style="line-height: 150%">
+                                <input class="form-control string" id="no_table_title" v-model="form_thread_title" placeholder="Title of the story" type="text" style=""/>
+                                <label class="quarter left" style="text-align:center; padding: 2">Choose Category:</label>
+                                    <select class="threequarters right" id="no_table_cate" v-model="form_thread_category">
+                                        <option value="action">Action</option>
+                                        <option value="adventure">Adventure</option>
+                                        <option value="apocalyptic">Apocalyptic</option>
+                                        <option value="children">Children's</option>
+                                        <option value="comedy">Comedy</option>
+                                        <option value="contemporary">Contemporary</option>
+                                        <option value="crime">Crime</option>
+                                        <option value="dark">Dark</option>
+                                        <option value="drama">Drama</option>
+                                        <option value="epic">Epic</option>
+                                        <option value="experimental">Experimental</option>
+                                        <option value="fairy_tale">Fairy tale</option>
+                                        <option value="fan_fic">Fan fiction</option>
+                                        <option value="fantasy">Fantasy</option>
+                                        <option value="historic">Historic</option>
+                                        <option value="horror">Horror</option>
+                                        <option value="humor">Humor</option>
+                                        <option value="meta">Meta</option>
+                                        <option value="mystery">Mystery</option>
+                                        <option value="nsfw">! NSFW !</option>
+                                        <option value="philosophic">Philosophic</option>
+                                        <option value="political">Political</option>
+                                        <option value="romance">Romance</option>
+                                        <option value="satire">Satire</option>
+                                        <option value="school">School</option>
+                                        <option value="sci_fi">Science fiction</option>
+                                        <option value="spiritual">Spiritual</option>
+                                        <option value="sports">Sports</option>
+                                        <option value="thriller">Thriller</option>
+                                        <option value="tragedy">Tragedy</option>
+                                        <option value="urban">Urban</option>
+                                        <option value="western">Western</option>
+                                        <option value="young_adult">Young adult</option>
+                                    </select>
+                                <span class="help-block"></span>
+                            </div>
+                            <div class="tags dismissible"><span class="teal">one</span><span>two</span><span class="off">three</span></div>
+                        </div>
+                    </form>
             </div>
 
             <div class="quarter right">
