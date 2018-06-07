@@ -13,6 +13,7 @@ def get_posts():
         if i < end_idx - start_idx:
             m = dict(
                 id = r.id,
+                user_email = r.user_email,
                 user_name = db(db.auth_user.email == r.user_email).select(db.auth_user.first_name).first().first_name + " " + db(db.auth_user.email == r.user_email).select(db.auth_user.last_name).first().last_name,
                 content = r.cont,
                 date = r.updated_on
@@ -21,7 +22,11 @@ def get_posts():
         else:
             has_more = True
     logged_in = auth.user is not None
-    return response.json(dict(posts=posts, looged_in=logged_in, has_more=has_more,))
+    t = db(db.thread.id == thread_id).select(db.thread.ALL).first()
+    thread_title = t.title
+    thread_cate = t.category
+    thread_own = t.created_by
+    return response.json(dict(posts=posts, looged_in=logged_in, has_more=has_more, thread_title=thread_title, thread_cate=thread_cate))
 
 
 def get_threads():

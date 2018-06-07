@@ -116,3 +116,9 @@ CREATE TABLE "web2py_session_183Final"(
     "session_data" BLOB
 );
 success!
+timestamp: 2018-06-06T18:59:29.437000
+ALTER TABLE "post" ADD "is_closed" CHAR(1);
+success!
+timestamp: 2018-06-06T18:59:29.459000
+ALTER TABLE "thread" ADD "created_by" CHAR(512);
+success!

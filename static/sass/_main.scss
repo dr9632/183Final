@@ -2,20 +2,20 @@
   color: $clrHilight;
 }
 
-.memo_listing {
+.post_listing {
   margin: 10px 0px 10px 0px;
   padding: 0 0 0 0px;
 }
 
-.memo_list {
+.post_list {
   padding-top: 10px;
 }
 
-.memo {
-  border-color: $clrMemoBorder;
+.post {
+  border-color: $clrPostBorder;
   border-style: solid;
   border-width: 1px;
-  background: $clrMemoBackground;
+  background: $clrPostBackground;
   margin: 20px 0px 20px 0px;
   padding: 20px;
   @include border-radius(16px);

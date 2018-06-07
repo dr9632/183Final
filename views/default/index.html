@@ -15,39 +15,55 @@
     <div id="vue-div" class="display:none">
         <div class="container padded">
             <div class="threequarters" v-if="!is_creating">
-                {{if auth.user:}}
+                <div class="container">
+                    <div class="threequarters" v-if="curr_thread_id > -1">
+                        <h3>${curr_thread_title}</h3>
+                        <div class="tags"><i class="fa fa-tags" style="color: #868686;"></i> <span class="teal" v-for="tag in curr_thread_cate">${tag}</span></div>
+                    </div>
+                    {{if auth.user:}}
+                    <div class="quarter right" v-if="curr_thread_id > -1" style="padding-top: 56px">
+                        <button v-if="!is_adding" class="btn right" v-on:click="add_post_button()">
+                            <i class="fa fa-plus"></i> Continue this story
+                        </button>
+                    </div>
+                    {{pass}}
+                </div><br/>
                 <!-- Add form -->
                 <div v-if="is_adding" id="add_post_div">
                     <form action="#" v-on:submit.prevent="add_post(curr_thread_id)" class="form-horizontal" enctype="multipart/form-data" method="post">
                         <div class="form-group" id="no_table_memo__row">
                             <div>
-                                <textarea class="form-control string" id="no_table_post" v-model="form_content" placeholder="Story continues on..." type="text">
+                                <textarea class="form-control string" id="no_table_post" v-model="form_content" placeholder="Story continues on..." type="text" onkeyup="this.style.height='26px'; this.style.height = this.scrollHeight + 'px';">
                                 </textarea>
                                 <span class="help-block"></span>
                             </div>
                         </div>
                     </form>
+                    <!-- Buttons -->
+                    <div class="button_bar fill" v-if="curr_thread_id > -1">
+                        <button v-if="is_adding" class="btn" v-on:click="add_post(curr_thread_id)">
+                            <i class="fa fa-pencil-square-o"></i> Add
+                        </button>
+                        <button v-if="is_adding" class="btn" v-on:click="cancel_add_post()">
+                            <i class="fa fa-times"></i> Cancel
+                        </button>
+                    </div>
                 </div>
-
-                <!-- Buttons -->
-                <div class="button_bar" v-if="curr_thread_id > -1">
-                    <button v-if="!is_adding" class="btn" v-on:click="add_post_button()">
-                        <i class="fa fa-plus"></i> Continue this story
-                    </button>
-                    <button v-if="is_adding" class="btn" v-on:click="add_post(curr_thread_id)">
-                        <i class="fa fa-pencil-square-o"></i> Add
-                    </button>
-                    <button v-if="is_adding" class="btn" v-on:click="cancel_add_post()">
-                        <i class="fa fa-times"></i> Cancel
-                    </button>
-                </div>
-                {{pass}}
 
                 <div v-for="post in posts">
                     <!-- Post print -->
                     <div class="post">
                         <div class="post_content">${post.content}</div>
-                        <div class="post_author">Author: ${post.user_name} | Date posted: ${post.date}</div>
+                        <div class="post_author"><i class="fa fa-user" style="padding-right: 3px;"></i>
+                            <ul class="menu dark right">
+                                <li>${post.user_name}
+                                    <ul>
+                                        <li><a>Send message</a></li>
+                                        <li><a>Other posts</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
@@ -117,7 +133,7 @@
                     <button class="btn" v-on:click="create_thread()">
                         <i class="fa fa-check"></i> Create and start
                     </button>
-                    <button v-if="is_adding" class="btn" v-on:click="cancel_create_thread()">
+                    <button class="btn" v-on:click="cancel_create_thread()">
                         <i class="fa fa-times"></i> Cancel
                     </button>
                 </div>

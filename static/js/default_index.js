@@ -30,6 +30,8 @@ var app = function() {
             self.vue.posts = data.posts;
             self.vue.has_more = data.has_more;
             self.vue.logged_in = data.logged_in;
+            self.vue.curr_thread_title = data.thread_title;
+            self.vue.curr_thread_cate = data.thread_cate.split(",");
             enumerate(self.vue.posts);
         });
     };
@@ -165,7 +167,9 @@ var app = function() {
             form_thread_title: null,
             form_thread_category: [],
             form_thread_temp: "",
-            curr_thread_id: -1
+            curr_thread_id: -1,
+            curr_thread_title: "",
+            curr_thread_cate: []
         },
         methods: {
             get_posts: self.get_posts,
