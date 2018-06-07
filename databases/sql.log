@@ -1,4 +1,4 @@
-timestamp: 2018-06-06T21:50:52.515000
+timestamp: 2018-06-07T00:10:13.203000
 CREATE TABLE "web2py_session_183Final"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "locked" CHAR(1),
@@ -9,7 +9,7 @@ CREATE TABLE "web2py_session_183Final"(
     "session_data" BLOB
 );
 success!
-timestamp: 2018-06-06T21:50:52.571000
+timestamp: 2018-06-07T00:10:13.268000
 CREATE TABLE "auth_user"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "first_name" CHAR(128),
@@ -21,21 +21,21 @@ CREATE TABLE "auth_user"(
     "registration_id" CHAR(512)
 );
 success!
-timestamp: 2018-06-06T21:50:52.619000
+timestamp: 2018-06-07T00:10:13.312000
 CREATE TABLE "auth_group"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "role" CHAR(512),
     "description" TEXT
 );
 success!
-timestamp: 2018-06-06T21:50:52.659000
+timestamp: 2018-06-07T00:10:13.363000
 CREATE TABLE "auth_membership"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "user_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
     "group_id" INTEGER REFERENCES "auth_group" ("id") ON DELETE CASCADE  
 );
 success!
-timestamp: 2018-06-06T21:50:52.695000
+timestamp: 2018-06-07T00:10:13.405000
 CREATE TABLE "auth_permission"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "group_id" INTEGER REFERENCES "auth_group" ("id") ON DELETE CASCADE  ,
@@ -44,7 +44,7 @@ CREATE TABLE "auth_permission"(
     "record_id" INTEGER
 );
 success!
-timestamp: 2018-06-06T21:50:52.739000
+timestamp: 2018-06-07T00:10:13.447000
 CREATE TABLE "auth_event"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "time_stamp" TIMESTAMP,
@@ -54,7 +54,7 @@ CREATE TABLE "auth_event"(
     "description" TEXT
 );
 success!
-timestamp: 2018-06-06T21:50:52.783000
+timestamp: 2018-06-07T00:10:13.489000
 CREATE TABLE "auth_cas"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "user_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE  ,
@@ -64,7 +64,7 @@ CREATE TABLE "auth_cas"(
     "renew" CHAR(1)
 );
 success!
-timestamp: 2018-06-06T21:50:52.833000
+timestamp: 2018-06-07T00:10:13.533000
 CREATE TABLE "post"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "user_email" CHAR(512),
@@ -73,7 +73,7 @@ CREATE TABLE "post"(
     "thread_id" INTEGER
 );
 success!
-timestamp: 2018-06-06T21:50:52.923000
+timestamp: 2018-06-07T00:10:13.577000
 CREATE TABLE "thread"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "title" TEXT,
@@ -83,86 +83,13 @@ CREATE TABLE "thread"(
     "is_closed" CHAR(1)
 );
 success!
-timestamp: 2018-06-06T22:21:29.730000
+timestamp: 2018-06-07T00:10:13.617000
 CREATE TABLE "usr_msg"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "sent_from" CHAR(512),
-    "sent_to" TEXT,
-    "created_on" TIMESTAMP,
-    "created_by" CHAR(512),
-    "is_closed" CHAR(1)
+    "sent_to" CHAR(512),
+    "sent_on" TIMESTAMP,
+    "msg" TEXT,
+    "is_read" CHAR(1)
 );
-success!
-timestamp: 2018-06-06T22:37:45.068000
-ALTER TABLE "usr_msg" ADD "is_read" CHAR(1);
-timestamp: 2018-06-06T22:37:45.092000
-ALTER TABLE "usr_msg" ADD "msg" TEXT;
-timestamp: 2018-06-06T22:37:45.124000
-ALTER TABLE "usr_msg" ADD "sent_on" TIMESTAMP;
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
 success!
