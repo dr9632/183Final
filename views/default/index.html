@@ -20,7 +20,7 @@
                     <!-- THREAD HEADER -->
                     <div class="threequarters" v-if="curr_thread_id > -1">
                         <h3>${curr_thread_title}</h3>
-                        <div class="tags"><i class="fa fa-tags" style="color: #868686;"></i> <span class="teal" v-for="tag in curr_thread_cate">${tag}</span></div>
+                        <div class="tags" v-if="curr_thread_cate.length > 0"><i class="fa fa-tags" style="color: #868686;"></i> <span class="teal" v-for="tag in curr_thread_cate">${tag}</span></div>
                     </div>
                     {{if auth.user:}}
                     <div class="quarter right" v-if="curr_thread_id > -1" style="padding-top: 56px">
@@ -34,7 +34,7 @@
                         <h3>${curr_user_name}'s Writings</h3>
                     </div>
                     {{if auth.user:}}
-                    <div class="quarter right" v-if="is_viewing_user" style="padding-top: 56px">
+                    <div class="quarter right" v-if="is_viewing_user" style="padding-top: 32px">
                         <button v-if="!is_adding" class="btn right" v-on:click="">
                             <i class="fa fa-envelope"></i> Send a message
                         </button>
@@ -66,7 +66,7 @@
                 <div v-for="post in posts">
                     <!-- Post print -->
                     <div class="post">
-                        <div class="post_content" style="white-space: pre; line-height: 125%">${post.content}</div>
+                        <div class="post_content" style="white-space: pre-wrap; line-height: 125%">${post.content}</div>
                         <div class="post_author" v-if="!is_viewing_user"><i class="fa fa-user" style="padding-right: 3px;"></i>
                             <ul class="menu dark right">
                                 <li>${post.user_name}
@@ -160,7 +160,7 @@
                   <tbody>
                     <!-- One row for each threads. -->
                     <tr v-for="thread in threads">
-                        <td v-on:click="get_posts(thread.id)" v-bind:style="is_selected(thread.id)">${thread.title}</td>
+                        <td v-on:click="get_posts(thread.id)">${thread.title}</td>
                     </tr>
                   </tbody>
                 </table>
