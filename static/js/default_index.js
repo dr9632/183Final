@@ -198,18 +198,19 @@ var app = function() {
     }
 
     self.check_inbox = function (email) {
+        if(email != null) {
         $.getJSON(get_check_inbox_url(0, 10, email), function (data) {
             self.vue.new_msg = data.new_msg;
             self.vue.msgs = data.msgs;
             self.vue.inbox_has_more = data.has_more;
-        });
+        });}
     };
 
-    function get_update_inbox_url(start_idx, end_idx, email) {
+    function get_update_inbox_url(start_idx, end_idx) {
         var pp = {
             start_idx: start_idx,
             end_idx: end_idx,
-            email: email
+            email: auth_user
         };
         return update_inbox_url + "?" + $.param(pp);
     }
@@ -218,7 +219,11 @@ var app = function() {
         self.vue.is_creating = false;
         self.vue.is_viewing_user = false;
         self.vue.is_viewing_inbox = true;
-        enumerate(self.vue.msgs);
+        $.post(get_update_inbox_url(0, 10),
+            function (data) {
+                self.vue.new_msg = data.new_msg;
+                enumerate(self.vue.msgs);
+            });
     };
 
     self.inbox_get_more = function (email) {
@@ -246,7 +251,6 @@ var app = function() {
                 self.vue.is_sending = !self.vue.is_sending;
                 self.vue.form_msg = "";
                 $.web2py.flash("Message sent");
-                console.log(data)
             });
     };
 

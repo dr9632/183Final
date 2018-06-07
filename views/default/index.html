@@ -3,16 +3,18 @@
 {{block head}}
 <script src="{{=URL('static', 'js/vue.js')}}"></script>
 <script>
+    var auth_user = null;
     {{if auth.user:}}
-        var auth_user = "{{=auth.user.email}}";
+        auth_user = "{{=auth.user.email}}";
     {{pass}}
     var posts_url = "{{=URL('api', 'get_posts', hash_vars=False)}}";
     var threads_url = "{{=URL('api', 'get_threads', hash_vars=False)}}";
     var user_data_url = "{{=URL('api', 'get_user_data', hash_vars=False)}}";
     var create_thread_url = "{{=URL('api', 'create_thread', user_signature=True)}}";
     var add_post_url = "{{=URL('api', 'add_post', user_signature=True)}}";
-    var check_inbox_url = "{{=URL('api','check_inbox', user_signature=True)}}";
-    var send_msg_url = "{{=URL('api','send_msg', user_signature=True)}}";
+    var check_inbox_url = "{{=URL('api', 'check_inbox', user_signature=True)}}";
+    var send_msg_url = "{{=URL('api', 'send_msg', user_signature=True)}}";
+    var update_inbox_url = "{{=URL('api', 'update_inbox', user_signature=True)}}";
 </script>
 {{end}}
 
@@ -92,8 +94,8 @@
                     <div class="post" v-bind:id="post._idx">
                         <div class="post_content" style="white-space: pre-wrap; line-height: 125%">${post.content}</div>
                         <div class="post_author" v-if="!is_viewing_user"><i class="fa fa-user" style="padding-right: 3px;"></i>
-                            <ul class="menu dark right">
-                                <li>${post.user_name}
+                            <ul class="menu dark right" v-if="post.user_email!=auth_user">
+                                <li><b>${post.user_name}</b>
                                     <ul>
                                         {{if auth.user:}}
                                         <li><a href="#send_form" v-on:click="send_msg_button()">Send message</a></li>
@@ -102,6 +104,7 @@
                                     </ul>
                                 </li>
                             </ul>
+                            <span v-else><b>${post.user_name}</b></span>
                         </div>
                     </div>
                     <!-- Send form -->

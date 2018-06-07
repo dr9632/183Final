@@ -84,6 +84,9 @@ def add_post():
     m = db.post(m_id)
     post = dict(
         id = m.id,
+        user_email=m.user_email,
+        user_name=db(db.auth_user.email == m.user_email).select(db.auth_user.first_name).first().first_name + " " + db(
+            db.auth_user.email == m.user_email).select(db.auth_user.last_name).first().last_name,
         content = m.cont,
         thread_id = m.thread_id
     )
@@ -149,3 +152,20 @@ def send_msg():
         msg=m.msg
     )
     return response.json(dict(post=post))
+
+
+def update_inbox():
+    start_idx = int(request.vars.start_idx) if request.vars.start_idx is not None else 0
+    end_idx = int(request.vars.end_idx) if request.vars.end_idx is not None else 0
+    email = request.vars.email if request.vars.email is not None else 0
+    new_msg=False
+    rows = db(db.user_msg.sent_to == email).select(db.user_msg.ALL, limitby=(start_idx, end_idx + 1), orderby=~db.user_msg.id)
+
+    for i, r in enumerate(rows):
+        if i < end_idx - start_idx:
+            r.update_record(is_read=True)
+        else:
+            if r.is_read is False:
+                new_msg=True
+
+    return response.json(dict(new_msg=new_msg))
