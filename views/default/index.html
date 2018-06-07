@@ -53,7 +53,7 @@
                 <div v-for="post in posts">
                     <!-- Post print -->
                     <div class="post">
-                        <div class="post_content" style="white-space: pre; line-height: 125%">${post.content}</div>
+                        <div class="post_content" style="white-space: pre-wrap; line-height: 125%">${post.content}</div>
                         <div class="post_author"><i class="fa fa-user" style="padding-right: 3px;"></i>
                             <ul class="menu dark right">
                                 <li>${post.user_name}
@@ -147,7 +147,7 @@
                   <tbody>
                     <!-- One row for each threads. -->
                     <tr v-for="thread in threads">
-                        <td v-on:click="get_posts(thread.id)" v-bind:style="is_selected(thread.id)">${thread.title}</td>
+                        <td v-on:click="get_posts(thread.id)">${thread.title}</td>
                     </tr>
                   </tbody>
                 </table>

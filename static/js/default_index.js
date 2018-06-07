@@ -31,7 +31,8 @@ var app = function() {
             self.vue.has_more = data.has_more;
             self.vue.logged_in = data.logged_in;
             self.vue.curr_thread_title = data.thread_title;
-            self.vue.curr_thread_cate = data.thread_cate.split(",");
+            if (data.thread_cate.length > 0)
+                self.vue.curr_thread_cate = data.thread_cate.split(",");
             enumerate(self.vue.posts);
         });
     };
