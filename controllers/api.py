@@ -4,7 +4,7 @@
 def get_posts():
     start_idx = int(request.vars.start_idx) if request.vars.start_idx is not None else 0
     end_idx = int(request.vars.end_idx) if request.vars.end_idx is not None else 0
-    thread_id = int(request.vars.thread_id) if request.vars.end_idx is not None else 0
+    thread_id = int(request.vars.thread_id) if request.vars.thread_id is not None else 0
     posts = []
     has_more = False
     rows = db(db.post.thread_id == thread_id).select(db.post.ALL, limitby=(start_idx, end_idx + 1), orderby=~db.post.id)
@@ -26,7 +26,7 @@ def get_posts():
     thread_title = t.title
     thread_cate = t.category
     thread_own = t.created_by
-    return response.json(dict(posts=posts, looged_in=logged_in, has_more=has_more, thread_title=thread_title, thread_cate=thread_cate))
+    return response.json(dict(posts=posts, looged_in=logged_in, has_more=has_more, thread_title=thread_title, thread_cate=thread_cate, thread_own=thread_own))
 
 
 def get_threads():
@@ -50,6 +50,29 @@ def get_threads():
     logged_in = auth.user is not None
     return response.json(dict(threads=threads, looged_in=logged_in, has_more=has_more,))
 
+
+def get_user_data():
+    start_idx = int(request.vars.start_idx) if request.vars.start_idx is not None else 0
+    end_idx = int(request.vars.end_idx) if request.vars.end_idx is not None else 0
+    email = request.vars.email if request.vars.email is not None else 0
+    posts = []
+    has_more = False
+    rows = db(db.post.user_email == email).select(db.post.ALL, limitby=(start_idx, end_idx + 1), orderby=~db.post.id)
+
+    for i, r in enumerate(rows):
+        if i < end_idx - start_idx:
+            m = dict(
+                id = r.id,
+                content = r.cont,
+                date = r.updated_on
+            )
+            posts.append(m)
+        else:
+            has_more = True
+    logged_in = auth.user is not None
+    user_name = db(db.auth_user.email == email).select(db.auth_user.first_name).first().first_name + " " + db(
+        db.auth_user.email == email).select(db.auth_user.last_name).first().last_name
+    return response.json(dict(posts=posts, looged_in=logged_in, has_more=has_more, name=user_name))
 
 @auth.requires_signature()
 def add_post():

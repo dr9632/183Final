@@ -26,6 +26,7 @@ var app = function() {
 
     self.get_posts = function (thread_id) {
         self.vue.curr_thread_id = thread_id;
+        self.vue.is_viewing_user = false;
         $.getJSON(get_posts_url(0, 10, thread_id), function (data) {
             self.vue.posts = data.posts;
             self.vue.has_more = data.has_more;
@@ -72,10 +73,41 @@ var app = function() {
         });
     };
 
+    function get_user_data_url(start_idx, end_idx, email) {
+        var pp = {
+            start_idx: start_idx,
+            end_idx: end_idx,
+            email: email
+        };
+        return user_data_url + "?" + $.param(pp);
+    }
+
+    self.get_user_data = function (email) {
+        self.vue.curr_thread_id = -1;
+        self.vue.is_viewing_user = true;
+        $.getJSON(get_user_data_url(0, 10, email), function (data) {
+            self.vue.posts = data.posts;
+            self.vue.has_more = data.has_more;
+            self.vue.curr_user_name = data.name;
+            self.vue.curr_user_email = email;
+            self.vue.logged_in = data.logged_in;
+            enumerate(self.vue.posts);
+        });
+    };
+
+    self.user_get_more = function (email) {
+        var num_posts = self.vue.posts.length;
+        $.getJSON(get_memos_url(num_posts, num_posts + 10, email), function (data) {
+            self.vue.has_more = data.has_more;
+            self.extend(self.vue.posts, data.posts);
+            enumerate(self.vue.posts);
+        });
+    };
+
     self.is_selected = function (id) {
         if (self.vue.curr_thread_id==id)
             return 'background-color: teal; color: #fff;';
-    }
+    };
 
     self.add_post_button = function () {
         // The button to add a track has been pressed.
@@ -160,6 +192,7 @@ var app = function() {
         data: {
             is_adding: false,
             is_creating: false,
+            is_viewing_user: false,
             posts: [],
             threads: [],
             logged_in: false,
@@ -171,12 +204,16 @@ var app = function() {
             form_thread_temp: "",
             curr_thread_id: -1,
             curr_thread_title: "",
-            curr_thread_cate: []
+            curr_thread_cate: [],
+            curr_user_name: "",
+            curr_user_email: ""
         },
         methods: {
             get_posts: self.get_posts,
             get_more: self.get_more,
             thread_get_more: self.thread_get_more,
+            get_user_data: self.get_user_data,
+            user_get_more: self.user_get_more,
             is_selected: self.is_selected,
             add_post_button: self.add_post_button,
             add_post: self.add_post,
