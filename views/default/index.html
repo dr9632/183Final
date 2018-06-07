@@ -3,11 +3,15 @@
 {{block head}}
 <script src="{{=URL('static', 'js/vue.js')}}"></script>
 <script>
+    {{if auth.user:}}
+        var auth_user = "{{=auth.user.email}}";
+    {{pass}}
     var posts_url = "{{=URL('api', 'get_posts', hash_vars=False)}}";
     var threads_url = "{{=URL('api', 'get_threads', hash_vars=False)}}";
     var user_data_url = "{{=URL('api', 'get_user_data', hash_vars=False)}}";
     var create_thread_url = "{{=URL('api', 'create_thread', user_signature=True)}}";
     var add_post_url = "{{=URL('api', 'add_post', user_signature=True)}}";
+    var check_inbox_url = "{{=URL('api','check_inbox', user_signature=True)}}";
 </script>
 {{end}}
 
@@ -152,9 +156,30 @@
                 </div>
             </div>
 
+            <!-- INBOX AREA -->
+            <div class="threequarters" v-if="is_viewing_inbox">
+                <h3><i class="fa fa-envelope"></i> Inbox</h3><br/>
+                <div v-for="msg in msgs">
+                    <!-- Post print -->
+                    <div class="post">
+                        <div class="post_content" style="white-space: pre-wrap; line-height: 125%">${msg.msg}</div>
+                        <div class="post_author">From. ${msg.sender_name} <button><i class="fa fa-reply"></i> </button></div>
+                    </div>
+                </div>
+
+                <!-- Get more -->
+                <div v-if="has_more" class="show_more" align="center">
+                    <button class="btn btn-default rounded" v-on:click="get_more()">
+                        <i class="fa fa-ellipsis-h"></i> Load more
+                    </button>
+                </div>
+            </div>
+
             <div class="quarter right">
                 {{if auth.user:}}
                     <button v-on:click="create_thread_button()"><i class="fa fa-book"></i> Start a new story</button>
+                    <button v-if="new_msg" class="pulse" v-on:click=""><i class="fa fa-envelope"></i> Inbox</button>
+                    <button v-else v-on:click="print_inbox()"><i class="fa fa-envelope"></i> Inbox</button>
                 {{pass}}
                 <table class="fill" id="thread_selector">
                   <tbody>

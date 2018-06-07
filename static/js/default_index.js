@@ -26,7 +26,9 @@ var app = function() {
 
     self.get_posts = function (thread_id) {
         self.vue.curr_thread_id = thread_id;
+        self.vue.is_creating = false;
         self.vue.is_viewing_user = false;
+        self.vue.is_viewing_inbox = false;
         $.getJSON(get_posts_url(0, 10, thread_id), function (data) {
             self.vue.posts = data.posts;
             self.vue.has_more = data.has_more;
@@ -40,7 +42,7 @@ var app = function() {
 
     self.get_more = function (thread_id) {
         var num_posts = self.vue.posts.length;
-        $.getJSON(get_memos_url(num_posts, num_posts + 10, thread_id), function (data) {
+        $.getJSON(get_posts_url(num_posts, num_posts + 10, thread_id), function (data) {
             self.vue.has_more = data.has_more;
             self.extend(self.vue.posts, data.posts);
             enumerate(self.vue.posts);
@@ -56,7 +58,7 @@ var app = function() {
     }
 
     self.get_threads = function () {
-        $.getJSON(get_threads_url(0, 10), function (data) {
+        $.getJSON(get_threads_url(0, 15), function (data) {
             self.vue.threads = data.threads;
             self.vue.thread_has_more = data.has_more;
             self.vue.logged_in = data.logged_in;
@@ -84,7 +86,9 @@ var app = function() {
 
     self.get_user_data = function (email) {
         self.vue.curr_thread_id = -1;
+        self.vue.is_creating = false;
         self.vue.is_viewing_user = true;
+        self.vue.is_viewing_inbox = false;
         $.getJSON(get_user_data_url(0, 10, email), function (data) {
             self.vue.posts = data.posts;
             self.vue.has_more = data.has_more;
@@ -97,7 +101,7 @@ var app = function() {
 
     self.user_get_more = function (email) {
         var num_posts = self.vue.posts.length;
-        $.getJSON(get_memos_url(num_posts, num_posts + 10, email), function (data) {
+        $.getJSON(get_user_data_url(num_posts, num_posts + 10, email), function (data) {
             self.vue.has_more = data.has_more;
             self.extend(self.vue.posts, data.posts);
             enumerate(self.vue.posts);
@@ -137,7 +141,9 @@ var app = function() {
 
     self.create_thread_button = function () {
         // The button to add a track has been pressed.
-          self.vue.is_creating = true;
+        self.vue.is_creating = true;
+        self.vue.is_viewing_user = false;
+        self.vue.is_viewing_inbox = false;
     };
 
     self.is_cate = function (cate) {
@@ -155,8 +161,6 @@ var app = function() {
     self.rmv_cate = function (cate_idx) {
          self.vue.form_thread_category.splice(cate_idx, 1);
          enumerate(self.vue.form_thread_category);
-         console.log("rmved element remaining cates");
-         console.log(self.vue.form_thread_category);
     };
 
     self.create_thread = function () {
@@ -184,6 +188,39 @@ var app = function() {
         self.vue.form_thread_temp = "";
     };
 
+    function get_check_inbox_url(start_idx, end_idx, email) {
+        var pp = {
+            start_idx: start_idx,
+            end_idx: end_idx,
+            email: email
+        };
+        return check_inbox_url + "?" + $.param(pp);
+    }
+
+    self.check_inbox = function (email) {
+        $.getJSON(get_check_inbox_url(0, 10, email), function (data) {
+            self.vue.new_msg = data.new_msg;
+            self.vue.msgs = data.msgs;
+            self.vue.inbox_has_more = data.has_more;
+        });
+    };
+
+    self.print_inbox = function () {
+        self.vue.is_creating = false;
+        self.vue.is_viewing_user = false;
+        self.vue.is_viewing_inbox = true;
+        enumerate(self.vue.msgs);
+    };
+
+    self.inbox_get_more = function (email) {
+        var num_posts = self.vue.msgs.length;
+        $.getJSON(get_check_inbox_url(num_posts, num_posts + 10, email), function (data) {
+            self.vue.inbox_has_more = data.has_more;
+            self.extend(self.vue.posts, data.posts);
+            enumerate(self.vue.posts);
+        });
+    };
+
     // Complete as needed.
     self.vue = new Vue({
         el: "#vue-div",
@@ -193,11 +230,15 @@ var app = function() {
             is_adding: false,
             is_creating: false,
             is_viewing_user: false,
+            is_viewing_inbox: false,
             posts: [],
             threads: [],
+            masgs: [],
             logged_in: false,
             has_more: false,
             thread_has_more: false,
+            inbox_has_more: false,
+            new_msg: false,
             form_content: null,
             form_thread_title: null,
             form_thread_category: [],
@@ -223,13 +264,15 @@ var app = function() {
             add_cate: self.add_cate,
             rmv_cate: self.rmv_cate,
             create_thread: self.create_thread,
-            cancel_create_thread: self.cancel_create_thread
+            cancel_create_thread: self.cancel_create_thread,
+            print_inbox: self.print_inbox,
+            inbox_get_more: self.inbox_get_more
         }
 
     });
 
-    //self.get_posts();
     self.get_threads();
+    self.check_inbox(auth_user);
     $("#vue-div").show();
 
     return self;

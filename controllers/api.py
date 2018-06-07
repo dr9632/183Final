@@ -106,23 +106,29 @@ def create_thread():
     return response.json(dict(thread=thread))
 
 
-@auth.requires_signature()
-def del_memo():
-    db(db.checklist.id == request.vars.memo_id).delete()
-    return "ok"
+def check_inbox():
+    start_idx = int(request.vars.start_idx) if request.vars.start_idx is not None else 0
+    end_idx = int(request.vars.end_idx) if request.vars.end_idx is not None else 0
+    email = request.vars.email if request.vars.email is not None else 0
+    posts = []
+    has_more = False
+    new_msg = False
+    rows = db(db.user_msg.sent_to == email).select(db.user_msg.ALL, limitby=(start_idx, end_idx + 1), orderby=~db.user_msg.id)
 
+    for i, r in enumerate(rows):
+        if i < end_idx - start_idx:
+            m = dict(
+                id = r.id,
+                sender_email = r.sent_from,
+                sender_name = db(db.auth_user.email == r.sent_from).select(db.auth_user.first_name).first().first_name + " " + db(db.auth_user.email == r.user_email).select(db.auth_user.last_name).first().last_name,
+                msg = r.msg,
+                date = r.sent_on,
+                is_read = r.is_read
+            )
+            posts.append(m)
+            if r.is_read:
+                new_msg = True
+        else:
+            has_more = True
 
-@auth.requires_signature()
-def edit_memo():
-    memo = db(db.checklist.id == request.vars.id).select().first()
-    memo.update_record(title=request.vars.title)
-    memo.update_record(memo=request.vars.memo)
-
-    return dict()
-
-
-@auth.requires_signature()
-def toggle_public():
-    cl = db(db.checklist.id == request.vars.memo_id).select().first()
-    cl.update_record(is_public=not cl.is_public)
-    return "ok"
+    return response.json(dict(msgs=posts, has_more=has_more, new_msg=new_msg))
