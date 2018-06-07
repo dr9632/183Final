@@ -35,7 +35,7 @@
                     </div>
                     {{if auth.user:}}
                     <div class="quarter right" v-if="is_viewing_user" style="padding-top: 56px">
-                        <button v-if="!is_adding" class="btn right" v-on:click="add_post_button()">
+                        <button v-if="!is_adding" class="btn right" v-on:click="">
                             <i class="fa fa-envelope"></i> Send a message
                         </button>
                     </div>
@@ -67,12 +67,12 @@
                     <!-- Post print -->
                     <div class="post">
                         <div class="post_content" style="white-space: pre; line-height: 125%">${post.content}</div>
-                        <div class="post_author"><i class="fa fa-user" style="padding-right: 3px;"></i>
+                        <div class="post_author" v-if="!is_viewing_user"><i class="fa fa-user" style="padding-right: 3px;"></i>
                             <ul class="menu dark right">
                                 <li>${post.user_name}
                                     <ul>
                                         <li><a>Send message</a></li>
-                                        <li><a>Other posts</a></li>
+                                        <li><a v-on:click="get_user_data(post.user_email)">Other posts</a></li>
                                     </ul>
                                 </li>
                             </ul>

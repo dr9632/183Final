@@ -26,6 +26,7 @@ var app = function() {
 
     self.get_posts = function (thread_id) {
         self.vue.curr_thread_id = thread_id;
+        self.vue.is_viewing_user = false;
         $.getJSON(get_posts_url(0, 10, thread_id), function (data) {
             self.vue.posts = data.posts;
             self.vue.has_more = data.has_more;
@@ -62,6 +63,15 @@ var app = function() {
         });
     };
 
+    self.thread_get_more = function () {
+        var num_threads = self.vue.threads.length;
+        $.getJSON(get_threads_url(num_threads, num_threads + 10), function (data) {
+            self.vue.thread_has_more = data.has_more;
+            self.extend(self.vue.threads, data.threads);
+            enumerate(self.vue.threads);
+        });
+    };
+
     function get_user_data_url(start_idx, end_idx, email) {
         var pp = {
             start_idx: start_idx,
@@ -84,12 +94,12 @@ var app = function() {
         });
     };
 
-    self.thread_get_more = function () {
-        var num_threads = self.vue.threads.length;
-        $.getJSON(get_threads_url(num_threads, num_threads + 10), function (data) {
-            self.vue.thread_has_more = data.has_more;
-            self.extend(self.vue.threads, data.threads);
-            enumerate(self.vue.threads);
+    self.user_get_more = function (email) {
+        var num_posts = self.vue.posts.length;
+        $.getJSON(get_memos_url(num_posts, num_posts + 10, email), function (data) {
+            self.vue.has_more = data.has_more;
+            self.extend(self.vue.posts, data.posts);
+            enumerate(self.vue.posts);
         });
     };
 
@@ -201,6 +211,8 @@ var app = function() {
             get_posts: self.get_posts,
             get_more: self.get_more,
             thread_get_more: self.thread_get_more,
+            get_user_data: self.get_user_data,
+            user_get_more: self.user_get_more,
             is_selected: self.is_selected,
             add_post_button: self.add_post_button,
             add_post: self.add_post,
