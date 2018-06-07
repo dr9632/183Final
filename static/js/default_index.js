@@ -91,6 +91,7 @@ var app = function() {
                 $.web2py.enableElement($("#add_post_submit"));
                 self.vue.is_adding = !self.vue.is_adding;
                 self.vue.posts.unshift(data.post);
+                self.vue.posts[0].content = self.vue.posts[0].content.replaceAll("\n","<br/>");
                 enumerate(self.vue.posts);
                 self.vue.form_content = "";
             });
