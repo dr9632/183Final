@@ -221,6 +221,30 @@ var app = function() {
         });
     };
 
+    self.send_msg_button = function () {
+        // The button to add a track has been pressed.
+          self.vue.is_sending = true;
+    };
+
+    self.send_msg = function (email) {
+        $.post(send_msg_url,
+            {
+                content: self.vue.form_msg,
+                sent_to: email
+            },
+            function (data) {
+                $.web2py.enableElement($("#send_msg_submit"));
+                self.vue.is_sending = !self.vue.is_sending;
+                self.vue.form_msg = "";
+                $.web2py.flash("Message sent");
+            });
+    };
+
+    self.cancel_send_msg = function () {
+        self.vue.is_sending = false;
+        self.vue.form_msg = "";
+    };
+
     // Complete as needed.
     self.vue = new Vue({
         el: "#vue-div",
@@ -231,6 +255,7 @@ var app = function() {
             is_creating: false,
             is_viewing_user: false,
             is_viewing_inbox: false,
+            is_sending: false,
             posts: [],
             threads: [],
             masgs: [],
@@ -243,6 +268,7 @@ var app = function() {
             form_thread_title: null,
             form_thread_category: [],
             form_thread_temp: "",
+            form_msg: "",
             curr_thread_id: -1,
             curr_thread_title: "",
             curr_thread_cate: [],
@@ -266,7 +292,10 @@ var app = function() {
             create_thread: self.create_thread,
             cancel_create_thread: self.cancel_create_thread,
             print_inbox: self.print_inbox,
-            inbox_get_more: self.inbox_get_more
+            inbox_get_more: self.inbox_get_more,
+            send_msg_button: self.send_msg_button,
+            send_msg: self.send_msg,
+            cancel_send_msg: self.cancel_send_msg
         }
 
     });

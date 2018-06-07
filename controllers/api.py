@@ -122,13 +122,14 @@ def check_inbox():
                 sender_email = r.sent_from,
                 sender_name = db(db.auth_user.email == r.sent_from).select(db.auth_user.first_name).first().first_name + " " + db(db.auth_user.email == r.user_email).select(db.auth_user.last_name).first().last_name,
                 msg = r.msg,
-                date = r.sent_on,
-                is_read = r.is_read
+                date = r.sent_on
             )
             posts.append(m)
-            if r.is_read:
-                new_msg = True
+
         else:
             has_more = True
+
+        if r.is_read is False:
+            new_msg = True
 
     return response.json(dict(msgs=posts, has_more=has_more, new_msg=new_msg))

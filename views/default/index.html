@@ -12,6 +12,7 @@
     var create_thread_url = "{{=URL('api', 'create_thread', user_signature=True)}}";
     var add_post_url = "{{=URL('api', 'add_post', user_signature=True)}}";
     var check_inbox_url = "{{=URL('api','check_inbox', user_signature=True)}}";
+    var send_msg_url = "{{=URL('api','send_msg', user_signature=True)}}";
 </script>
 {{end}}
 
@@ -19,7 +20,7 @@
 
     <div id="vue-div" class="display:none">
         <div class="container padded">
-            <div class="threequarters" v-if="!is_creating">
+            <div class="threequarters" v-if="!is_creating && !is_viewing_inbox">
                 <div class="container">
                     <!-- THREAD HEADER -->
                     <div class="threequarters" v-if="curr_thread_id > -1">
@@ -39,11 +40,30 @@
                     </div>
                     {{if auth.user:}}
                     <div class="quarter right" v-if="is_viewing_user" style="padding-top: 32px">
-                        <button v-if="!is_adding" class="btn right" v-on:click="">
+                        <a href="#send_form_viaud"><button v-if="!is_adding" class="btn right" v-on:click="send_msg_button()">
                             <i class="fa fa-envelope"></i> Send a message
-                        </button>
+                        </button></a>
                     </div>
                     {{pass}}
+                    <div class="modal" id="send_form_viaud" v-if="is_sending">
+                        <div class="third rounded white padded">
+                            <h3><i class="fa fa-envelope"></i> Send a Message</h3>
+                            To: ${curr_user_name}<br/>
+                            <form action="#" v-on:submit.prevent="send_message(curr_user_email)" class="form-horizontal" enctype="multipart/form-data" method="post">
+                                <div class="form-group" id="no_table_memo__row">
+                                    <div>
+                                        <textarea class="form-control string" id="no_table_post" v-model="form_msg" placeholder="Send a nice message" type="text" onkeyup="this.style.height='26px'; this.style.height = this.scrollHeight + 'px';">
+                                        </textarea>
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="right">
+                                <a class="btn" v-on:click="send_msg(curr_user_email)">Send</a>
+                                <a class="close btn" v-on:click="cancel_send_msg()">Close</a>
+                            </div>
+                        </div>
+                    </div>
                 </div><br/>
                 <!-- Add form -->
                 <div v-if="is_adding" id="add_post_div">
@@ -69,17 +89,37 @@
 
                 <div v-for="post in posts">
                     <!-- Post print -->
-                    <div class="post">
+                    <div class="post" v-bind:id="post._idx">
                         <div class="post_content" style="white-space: pre-wrap; line-height: 125%">${post.content}</div>
                         <div class="post_author" v-if="!is_viewing_user"><i class="fa fa-user" style="padding-right: 3px;"></i>
                             <ul class="menu dark right">
                                 <li>${post.user_name}
                                     <ul>
-                                        <li><a>Send message</a></li>
+                                        <li><a href="#send_form" v-on:click="send_msg_button()">Send message</a></li>
                                         <li><a v-on:click="get_user_data(post.user_email)">Other posts</a></li>
                                     </ul>
                                 </li>
                             </ul>
+                        </div>
+                    </div>
+                    <!-- Send form -->
+                    <div class="modal" id="send_form" v-if="is_sending">
+                        <div class="third rounded white padded">
+                            <h3><i class="fa fa-envelope"></i> Send a Message</h3>
+                            To: ${post.user_name}<br/>
+                            <form action="#" v-on:submit.prevent="send_message(post.user_email)" class="form-horizontal" enctype="multipart/form-data" method="post">
+                                <div class="form-group" id="no_table_memo__row">
+                                    <div>
+                                        <textarea class="form-control string" id="no_table_post" v-model="form_msg" placeholder="Send a nice message" type="text" onkeyup="this.style.height='26px'; this.style.height = this.scrollHeight + 'px';">
+                                        </textarea>
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="right">
+                                <a class="btn" v-on:click="send_msg(post.user_email)">Send</a>
+                                <a class="close btn" v-on:click="cancel_send_msg()">Close</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -167,9 +207,9 @@
                     </div>
                 </div>
 
-                <!-- Get more -->
-                <div v-if="has_more" class="show_more" align="center">
-                    <button class="btn btn-default rounded" v-on:click="get_more()">
+                <!-- Get more inbox -->
+                <div v-if="inbox_has_more" class="show_more" align="center">
+                    <button class="btn btn-default rounded" v-on:click="inbox_get_more(auth_user)">
                         <i class="fa fa-ellipsis-h"></i> Load more
                     </button>
                 </div>
