@@ -29,6 +29,14 @@ db.define_table('thread',
                 Field('is_closed', 'boolean', default=False)
                 )
 
+db.define_table('usr_msg',
+                Field('sent_from', default=get_user_email()),
+                Field('sent_to', 'string'),
+                Field('sent_on', 'datetime', update=datetime.datetime.utcnow()),
+                Field('msg', 'text'),
+                Field('is_read', 'boolean', default=False)
+                )
+
 db.post.user_email.writable = False
 db.post.user_email.readable = False
 db.post.updated_on.writable = db.post.updated_on.readable = False
@@ -37,9 +45,14 @@ db.post.thread_id.writable = db.post.thread_id.readable = False
 
 db.thread.created_on.writable = db.thread.created_on.readable = False
 db.thread.id.writable = db.thread.id.readable = False
-db.thread.id.writable = db.thread.id.readable = False
 db.thread.created_by.writable = db.thread.created_by.readable = False
 db.thread.is_closed.writable = db.thread.is_closed.readable = False
+
+db.usr_msg.sent_on.writable = db.usr_msg.sent_on.readable = False
+db.usr_msg.id.writable = db.usr_msg.id.readable = False
+db.usr_msg.sent_from.writable = db.usr_msg.sent_from.readable = False
+db.usr_msg.sent_to.writable = db.usr_msg.sent_to.readable = False
+db.usr_msg.is_read.writable = db.usr_msg.is_read.readable = False
 
 # after defining tables, uncomment below to enable auditing
 auth.enable_record_versioning(db)

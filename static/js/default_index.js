@@ -62,6 +62,28 @@ var app = function() {
         });
     };
 
+    function get_user_data_url(start_idx, end_idx, email) {
+        var pp = {
+            start_idx: start_idx,
+            end_idx: end_idx,
+            email: email
+        };
+        return user_data_url + "?" + $.param(pp);
+    }
+
+    self.get_user_data = function (email) {
+        self.vue.curr_thread_id = -1;
+        self.vue.is_viewing_user = true;
+        $.getJSON(get_user_data_url(0, 10, email), function (data) {
+            self.vue.posts = data.posts;
+            self.vue.has_more = data.has_more;
+            self.vue.curr_user_name = data.name;
+            self.vue.curr_user_email = email;
+            self.vue.logged_in = data.logged_in;
+            enumerate(self.vue.posts);
+        });
+    };
+
     self.thread_get_more = function () {
         var num_threads = self.vue.threads.length;
         $.getJSON(get_threads_url(num_threads, num_threads + 10), function (data) {
@@ -74,7 +96,7 @@ var app = function() {
     self.is_selected = function (id) {
         if (self.vue.curr_thread_id==id)
             return 'background-color: teal; color: #fff;';
-    }
+    };
 
     self.add_post_button = function () {
         // The button to add a track has been pressed.
@@ -159,6 +181,7 @@ var app = function() {
         data: {
             is_adding: false,
             is_creating: false,
+            is_viewing_user: false,
             posts: [],
             threads: [],
             logged_in: false,
@@ -170,7 +193,9 @@ var app = function() {
             form_thread_temp: "",
             curr_thread_id: -1,
             curr_thread_title: "",
-            curr_thread_cate: []
+            curr_thread_cate: [],
+            curr_user_name: "",
+            curr_user_email: ""
         },
         methods: {
             get_posts: self.get_posts,

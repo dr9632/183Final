@@ -5,6 +5,7 @@
 <script>
     var posts_url = "{{=URL('api', 'get_posts', hash_vars=False)}}";
     var threads_url = "{{=URL('api', 'get_threads', hash_vars=False)}}";
+    var user_data_url = "{{=URL('api', 'get_user_data', hash_vars=False)}}";
     var create_thread_url = "{{=URL('api', 'create_thread', user_signature=True)}}";
     var add_post_url = "{{=URL('api', 'add_post', user_signature=True)}}";
 </script>
@@ -16,6 +17,7 @@
         <div class="container padded">
             <div class="threequarters" v-if="!is_creating">
                 <div class="container">
+                    <!-- THREAD HEADER -->
                     <div class="threequarters" v-if="curr_thread_id > -1">
                         <h3>${curr_thread_title}</h3>
                         <div class="tags"><i class="fa fa-tags" style="color: #868686;"></i> <span class="teal" v-for="tag in curr_thread_cate">${tag}</span></div>
@@ -24,6 +26,17 @@
                     <div class="quarter right" v-if="curr_thread_id > -1" style="padding-top: 56px">
                         <button v-if="!is_adding" class="btn right" v-on:click="add_post_button()">
                             <i class="fa fa-plus"></i> Continue this story
+                        </button>
+                    </div>
+                    {{pass}}
+                    <!-- USER VIEW HEADER -->
+                    <div class="threequarters" v-if="is_viewing_user">
+                        <h3>${curr_user_name}'s Writings</h3>
+                    </div>
+                    {{if auth.user:}}
+                    <div class="quarter right" v-if="is_viewing_user" style="padding-top: 56px">
+                        <button v-if="!is_adding" class="btn right" v-on:click="add_post_button()">
+                            <i class="fa fa-envelope"></i> Send a message
                         </button>
                     </div>
                     {{pass}}
