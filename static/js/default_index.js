@@ -205,6 +205,15 @@ var app = function() {
         });
     };
 
+    function get_update_inbox_url(start_idx, end_idx, email) {
+        var pp = {
+            start_idx: start_idx,
+            end_idx: end_idx,
+            email: email
+        };
+        return update_inbox_url + "?" + $.param(pp);
+    }
+
     self.print_inbox = function () {
         self.vue.is_creating = false;
         self.vue.is_viewing_user = false;
@@ -229,7 +238,7 @@ var app = function() {
     self.send_msg = function (email) {
         $.post(send_msg_url,
             {
-                content: self.vue.form_msg,
+                msg: self.vue.form_msg,
                 sent_to: email
             },
             function (data) {
@@ -237,6 +246,7 @@ var app = function() {
                 self.vue.is_sending = !self.vue.is_sending;
                 self.vue.form_msg = "";
                 $.web2py.flash("Message sent");
+                console.log(data)
             });
     };
 

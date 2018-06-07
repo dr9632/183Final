@@ -120,7 +120,7 @@ def check_inbox():
             m = dict(
                 id = r.id,
                 sender_email = r.sent_from,
-                sender_name = db(db.auth_user.email == r.sent_from).select(db.auth_user.first_name).first().first_name + " " + db(db.auth_user.email == r.user_email).select(db.auth_user.last_name).first().last_name,
+                sender_name = db(db.auth_user.email == r.sent_from).select(db.auth_user.first_name).first().first_name + " " + db(db.auth_user.email == r.sent_from).select(db.auth_user.last_name).first().last_name,
                 msg = r.msg,
                 date = r.sent_on
             )
@@ -132,4 +132,20 @@ def check_inbox():
         if r.is_read is False:
             new_msg = True
 
-    return response.json(dict(msgs=posts, has_more=has_more, new_msg=new_msg))
+    return response.json(dict(msgs=posts, has_more=has_more, new_msg=new_msg, test="nada"))
+
+
+@auth.requires_signature()
+def send_msg():
+    m_id = db.user_msg.insert(
+        msg=request.vars.msg,
+        sent_to=request.vars.sent_to
+    )
+
+    m = db.user_msg(m_id)
+    post = dict(
+        id=m.id,
+        sent_to=m.sent_to,
+        msg=m.msg
+    )
+    return response.json(dict(post=post))

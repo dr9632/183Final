@@ -95,7 +95,9 @@
                             <ul class="menu dark right">
                                 <li>${post.user_name}
                                     <ul>
+                                        {{if auth.user:}}
                                         <li><a href="#send_form" v-on:click="send_msg_button()">Send message</a></li>
+                                        {{pass}}
                                         <li><a v-on:click="get_user_data(post.user_email)">Other posts</a></li>
                                     </ul>
                                 </li>
@@ -203,7 +205,26 @@
                     <!-- Post print -->
                     <div class="post">
                         <div class="post_content" style="white-space: pre-wrap; line-height: 125%">${msg.msg}</div>
-                        <div class="post_author">From. ${msg.sender_name} <button><i class="fa fa-reply"></i> </button></div>
+                        <div class="post_author">From. ${msg.sender_name} <a href="#send_form_rep"><button v-on:click="send_msg_button()"><i class="fa fa-reply"></i></button></a></div>
+                    </div>
+                    <div class="modal" id="send_form_rep" v-if="is_sending">
+                        <div class="third rounded white padded">
+                            <h3><i class="fa fa-envelope"></i> Send a Reply</h3>
+                            To: ${msg.sender_name}<br/>
+                            <form action="#" v-on:submit.prevent="send_message(msg.sender_email)" class="form-horizontal" enctype="multipart/form-data" method="post">
+                                <div class="form-group" id="no_table_memo__row">
+                                    <div>
+                                        <textarea class="form-control string" id="no_table_post" v-model="form_msg" placeholder="Send a nice message" type="text" onkeyup="this.style.height='26px'; this.style.height = this.scrollHeight + 'px';">
+                                        </textarea>
+                                        <span class="help-block"></span>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="right">
+                                <a class="btn" v-on:click="send_msg(msg.sender_email)">Send</a>
+                                <a class="close btn" v-on:click="cancel_send_msg()">Close</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -218,7 +239,7 @@
             <div class="quarter right">
                 {{if auth.user:}}
                     <button v-on:click="create_thread_button()"><i class="fa fa-book"></i> Start a new story</button>
-                    <button v-if="new_msg" class="pulse" v-on:click=""><i class="fa fa-envelope"></i> Inbox</button>
+                    <button v-if="new_msg" class="pulse" v-on:click="print_inbox()"><i class="fa fa-envelope"></i> Inbox</button>
                     <button v-else v-on:click="print_inbox()"><i class="fa fa-envelope"></i> Inbox</button>
                 {{pass}}
                 <table class="fill" id="thread_selector">
