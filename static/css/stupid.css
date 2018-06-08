@@ -308,7 +308,8 @@ a:not(.btn):not(.noeffect):after {
   margin-top:1.5em;
   padding:5px 15px;
   white-space:pre-wrap;
-  min-width:100px;
+  min-width:170px;
+  text-align: left;
 }
 
 /*** accordion ***/

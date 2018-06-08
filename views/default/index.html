@@ -254,6 +254,9 @@
                     <button v-if="new_msg" class="pulse" v-on:click="print_inbox()"><i class="fa fa-envelope"></i> Inbox</button>
                     <button v-else v-on:click="print_inbox()"><i class="fa fa-envelope"></i> Inbox</button>
                     {{pass}}
+                    <span v-if="auth_user==null" class="gray" data-tooltip="Sign in to start or contribute to the story!" style="padding:0.25em 0.5em; font-size:0.8em; font-weight: bold;margin:0 0.5em 0.5em 0;">
+                        <i class="fa fa-eye"></i> VIEW ONLY MODE
+                    </span>
                     <button v-on:click="get_threads()"><i class="fa fa-refresh"></i></button>
                 </div>
                     <div class="fill">
