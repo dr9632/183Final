@@ -327,6 +327,7 @@ var app = function() {
             get_more: self.get_more,
             asc_get: self.asc_get,
             dsc_get: self.dsc_get,
+            get_threads: self.get_threads,
             thread_get_more: self.thread_get_more,
             get_user_data: self.get_user_data,
             user_get_more: self.user_get_more,

@@ -248,13 +248,14 @@
             </div>
 
             <div class="quarter right">
-                {{if auth.user:}}
-                    <div class="fill">
+                <div class="fill">
+                    {{if auth.user:}}
                     <button v-on:click="create_thread_button()"><i class="fa fa-book"></i> Start a new story</button>
                     <button v-if="new_msg" class="pulse" v-on:click="print_inbox()"><i class="fa fa-envelope"></i> Inbox</button>
                     <button v-else v-on:click="print_inbox()"><i class="fa fa-envelope"></i> Inbox</button>
-                    </div>
-                {{pass}}
+                    {{pass}}
+                    <button v-on:click="get_threads()"><i class="fa fa-refresh"></i></button>
+                </div>
                     <div class="fill">
                         <form action="#" v-on:submit.prevent="search(form_search)" class="form-horizontal" enctype="multipart/form-data" method="post">
                             <div class="form-group container" id="no_table_memo__row">
@@ -263,7 +264,7 @@
                                     <span class="help-block"></span>
                                 </div>
                                 <div class="quarter right">
-                                    <button class="right" v-on:click="search(form_search)"><i class="fa fa-search"></i></button>
+                                    <button class="right" v-on:click="search(form_search)"><i class="fa fa-search" aria-hidden="true"></i></button>
                                 </div>
                             </div>
                         </form>

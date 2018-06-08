@@ -529,10 +529,13 @@
              * two lines with this one
              * el.data('w2p_disable_with', el[method]());
              */
+            /*
             if ((el.data('w2p_disable_with') == 'default') || (web2py.isUndefined(el.data(
                     'w2p_disable_with')))) {
                 el.data('w2p_disable_with', disable_with_message);
             }
+            */
+            el.data('w2p_disable_with', el[method]());
 
             /* set to disabled state*/
             el[method](el.data('w2p_disable_with'));
