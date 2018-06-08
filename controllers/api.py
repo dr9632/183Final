@@ -7,6 +7,34 @@ def get_posts():
     thread_id = int(request.vars.thread_id) if request.vars.thread_id is not None else 0
     posts = []
     has_more = False
+    rows = db(db.post.thread_id == thread_id).select(db.post.ALL, limitby=(start_idx, end_idx + 1))
+
+    for i, r in enumerate(rows):
+        if i < end_idx - start_idx:
+            m = dict(
+                id = r.id,
+                user_email = r.user_email,
+                user_name = db(db.auth_user.email == r.user_email).select(db.auth_user.first_name).first().first_name + " " + db(db.auth_user.email == r.user_email).select(db.auth_user.last_name).first().last_name,
+                content = r.cont,
+                date = r.created_on
+            )
+            posts.append(m)
+        else:
+            has_more = True
+    logged_in = auth.user is not None
+    t = db(db.thread.id == thread_id).select(db.thread.ALL).first()
+    thread_title = t.title
+    thread_cate = t.category
+    thread_own = t.created_by
+    return response.json(dict(posts=posts, looged_in=logged_in, has_more=has_more, thread_title=thread_title, thread_cate=thread_cate, thread_own=thread_own))
+
+
+def get_posts_rev():
+    start_idx = int(request.vars.start_idx) if request.vars.start_idx is not None else 0
+    end_idx = int(request.vars.end_idx) if request.vars.end_idx is not None else 0
+    thread_id = int(request.vars.thread_id) if request.vars.thread_id is not None else 0
+    posts = []
+    has_more = False
     rows = db(db.post.thread_id == thread_id).select(db.post.ALL, limitby=(start_idx, end_idx + 1), orderby=~db.post.id)
 
     for i, r in enumerate(rows):
@@ -16,7 +44,7 @@ def get_posts():
                 user_email = r.user_email,
                 user_name = db(db.auth_user.email == r.user_email).select(db.auth_user.first_name).first().first_name + " " + db(db.auth_user.email == r.user_email).select(db.auth_user.last_name).first().last_name,
                 content = r.cont,
-                date = r.updated_on
+                date = r.created_on
             )
             posts.append(m)
         else:
@@ -34,7 +62,7 @@ def get_threads():
     end_idx = int(request.vars.end_idx) if request.vars.end_idx is not None else 0
     threads = []
     has_more = False
-    rows = db().select(db.thread.ALL, limitby=(start_idx, end_idx + 1), orderby=db.thread.id)
+    rows = db().select(db.thread.ALL, limitby=(start_idx, end_idx + 1), orderby=~db.thread.updated_on)
 
     for i, r in enumerate(rows):
         if i < end_idx - start_idx:
@@ -42,7 +70,7 @@ def get_threads():
                 id = r.id,
                 title = r.title,
                 category = r.category.split(','),
-                date = r.created_on
+                date = r.updated_on
             )
             threads.append(m)
         else:
@@ -64,7 +92,7 @@ def get_user_data():
             m = dict(
                 id = r.id,
                 content = r.cont,
-                date = r.updated_on
+                date = r.created_on
             )
             posts.append(m)
         else:
@@ -90,6 +118,10 @@ def add_post():
         content = m.cont,
         thread_id = m.thread_id
     )
+
+    # Update updated date of thread
+    db.thread(m.thread_id).update_record(updated_on=m.created_on)
+
     return response.json(dict(post=post))
 
 
@@ -169,3 +201,21 @@ def update_inbox():
                 new_msg=True
 
     return response.json(dict(new_msg=new_msg))
+
+
+def search():
+    key = request.vars.key if request.vars.key is not None else 0
+    threads = []
+    rows = db().select(db.thread.ALL)
+
+    for i, r in enumerate(rows):
+        if key.lower() in r.title.lower() or key.lower() in r.category.lower():
+            m = dict(
+                id=r.id,
+                title=r.title,
+                category=r.category.split(','),
+                date=r.updated_on
+            )
+            threads.append(m)
+
+    return response.json(dict(threads=threads))

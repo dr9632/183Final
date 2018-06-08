@@ -8,6 +8,7 @@
         auth_user = "{{=auth.user.email}}";
     {{pass}}
     var posts_url = "{{=URL('api', 'get_posts', hash_vars=False)}}";
+    var posts_rev_url = "{{=URL('api', 'get_posts_rev', hash_vars=False)}}";
     var threads_url = "{{=URL('api', 'get_threads', hash_vars=False)}}";
     var user_data_url = "{{=URL('api', 'get_user_data', hash_vars=False)}}";
     var create_thread_url = "{{=URL('api', 'create_thread', user_signature=True)}}";
@@ -15,6 +16,7 @@
     var check_inbox_url = "{{=URL('api', 'check_inbox', user_signature=True)}}";
     var send_msg_url = "{{=URL('api', 'send_msg', user_signature=True)}}";
     var update_inbox_url = "{{=URL('api', 'update_inbox', user_signature=True)}}";
+    var search_url = "{{=URL('api', 'search', hash_vars=False)}}";
 </script>
 {{end}}
 
@@ -89,10 +91,16 @@
                     </div>
                 </div>
 
-                <div v-for="post in posts">
+                <div class="fill right" v-if="curr_thread_id > -1">
+                    <button class="rounded" v-on:click="asc_get()"><i class="fa fa-arrow-up"></i></button>
+                    <button class="rounded" v-on:click="dsc_get()"><i class="fa fa-arrow-down"></i></button>
+                    <button class="rounded" v-on:click="get_posts(curr_thread_id)"><i class="fa fa-refresh"></i></button>
+                </div>
+
+                <div class="fill" v-for="post in posts">
                     <!-- Post print -->
                     <div class="post" v-bind:id="post._idx">
-                        <div class="post_content" style="white-space: pre-wrap; line-height: 125%">${post.content}</div>
+                        <div class="post_content" style="white-space: pre-wrap; overflow-wrap: break-word; line-height: 125%">${post.content}</div>
                         <div class="post_author" v-if="!is_viewing_user"><i class="fa fa-user" style="padding-right: 3px;"></i>
                             <ul class="menu dark right" v-if="post.user_email!=auth_user">
                                 <li><b>${post.user_name}</b>
@@ -241,10 +249,25 @@
 
             <div class="quarter right">
                 {{if auth.user:}}
+                    <div class="fill">
                     <button v-on:click="create_thread_button()"><i class="fa fa-book"></i> Start a new story</button>
                     <button v-if="new_msg" class="pulse" v-on:click="print_inbox()"><i class="fa fa-envelope"></i> Inbox</button>
                     <button v-else v-on:click="print_inbox()"><i class="fa fa-envelope"></i> Inbox</button>
+                    </div>
                 {{pass}}
+                    <div class="fill">
+                        <form action="#" v-on:submit.prevent="search(form_search)" class="form-horizontal" enctype="multipart/form-data" method="post">
+                            <div class="form-group container" id="no_table_memo__row">
+                                <div class="threequarters">
+                                    <input class="threequarters" type="text" list="no_table_search" v-model="form_search" placeholder="Enter search keyword">
+                                    <span class="help-block"></span>
+                                </div>
+                                <div class="quarter right">
+                                    <button class="right" v-on:click="search(form_search)"><i class="fa fa-search"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 <table class="fill" id="thread_selector">
                   <tbody>
                     <!-- One row for each threads. -->
@@ -253,6 +276,12 @@
                     </tr>
                   </tbody>
                 </table>
+                <!-- Get more -->
+                <div v-if="thread_has_more" class="show_more" align="center">
+                    <button class="btn btn-default rounded" v-on:click="thread_get_more()">
+                        <i class="fa fa-ellipsis-h"></i> Load more
+                    </button>
+                </div>
             </div>
         </div>
     </div>

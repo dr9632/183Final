@@ -72,11 +72,11 @@ I00
 sg12
 S'string'
 p22
-ssS'created_on'
+ssS'updated_on'
 p23
 (dp24
 g3
-S'"created_on"'
+S'"updated_on"'
 p25
 sg5
 I4

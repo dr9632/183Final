@@ -17,14 +17,14 @@ def get_user_email():
 db.define_table('post',
                 Field('user_email', default=get_user_email()),
                 Field('cont', 'text'),
-                Field('updated_on', 'datetime', update=datetime.datetime.utcnow()),
+                Field('created_on', 'datetime', update=datetime.datetime.utcnow()),
                 Field('thread_id', 'integer')
                 )
 
 db.define_table('thread',
                 Field('title', 'text'),
                 Field('category', 'text'),
-                Field('created_on', 'datetime', update=datetime.datetime.utcnow()),
+                Field('updated_on', 'datetime', update=datetime.datetime.utcnow()),
                 Field('created_by', default=get_user_email()),
                 Field('is_closed', 'boolean', default=False)
                 )
@@ -39,11 +39,11 @@ db.define_table('user_msg',
 
 db.post.user_email.writable = False
 db.post.user_email.readable = False
-db.post.updated_on.writable = db.post.updated_on.readable = False
+db.post.created_on.writable = db.post.created_on.readable = False
 db.post.id.writable = db.post.id.readable = False
 db.post.thread_id.writable = db.post.thread_id.readable = False
 
-db.thread.created_on.writable = db.thread.created_on.readable = False
+db.thread.updated_on.writable = db.thread.updated_on.readable = False
 db.thread.id.writable = db.thread.id.readable = False
 db.thread.created_by.writable = db.thread.created_by.readable = False
 db.thread.is_closed.writable = db.thread.is_closed.readable = False

@@ -21,12 +21,18 @@ var app = function() {
             end_idx: end_idx,
             thread_id: thread_id
         };
+        if (self.vue.in_rev)
+            return posts_rev_url + "?" + $.param(pp);
+        else
         return posts_url + "?" + $.param(pp);
     }
 
     self.get_posts = function (thread_id) {
-        self.vue.curr_thread_id = thread_id;
-        self.vue.is_creating = false;
+        if(self.vue.curr_thread_id != thread_id) {
+            self.vue.curr_thread_id = thread_id;
+            self.vue.in_rev = false;
+        }
+        self.cancel_create_thread();
         self.vue.is_viewing_user = false;
         self.vue.is_viewing_inbox = false;
         $.getJSON(get_posts_url(0, 10, thread_id), function (data) {
@@ -36,8 +42,20 @@ var app = function() {
             self.vue.curr_thread_title = data.thread_title;
             if (data.thread_cate.length > 0)
                 self.vue.curr_thread_cate = data.thread_cate.split(",");
+            else
+                self.vue.curr_thread_cate = [];
             enumerate(self.vue.posts);
         });
+    };
+
+    self.asc_get = function () {
+        self.vue.in_rev = false;
+        self.get_posts(self.vue.curr_thread_id);
+    };
+
+    self.dsc_get = function () {
+        self.vue.in_rev = true;
+        self.get_posts(self.vue.curr_thread_id);
     };
 
     self.get_more = function (thread_id) {
@@ -86,7 +104,7 @@ var app = function() {
 
     self.get_user_data = function (email) {
         self.vue.curr_thread_id = -1;
-        self.vue.is_creating = false;
+        self.cancel_create_thread();
         self.vue.is_viewing_user = true;
         self.vue.is_viewing_inbox = false;
         $.getJSON(get_user_data_url(0, 10, email), function (data) {
@@ -114,7 +132,6 @@ var app = function() {
     };
 
     self.add_post_button = function () {
-        // The button to add a track has been pressed.
           self.vue.is_adding = true;
     };
 
@@ -128,7 +145,6 @@ var app = function() {
                 $.web2py.enableElement($("#add_post_submit"));
                 self.vue.is_adding = !self.vue.is_adding;
                 self.vue.posts.unshift(data.post);
-                self.vue.posts[0].content = self.vue.posts[0].content.replaceAll("\n","<br/>");
                 enumerate(self.vue.posts);
                 self.vue.form_content = "";
             });
@@ -140,7 +156,6 @@ var app = function() {
     };
 
     self.create_thread_button = function () {
-        // The button to add a track has been pressed.
         self.vue.is_creating = true;
         self.vue.is_viewing_user = false;
         self.vue.is_viewing_inbox = false;
@@ -216,7 +231,7 @@ var app = function() {
     }
 
     self.print_inbox = function () {
-        self.vue.is_creating = false;
+        self.cancel_create_thread();
         self.vue.is_viewing_user = false;
         self.vue.is_viewing_inbox = true;
         $.post(get_update_inbox_url(0, 10),
@@ -259,6 +274,22 @@ var app = function() {
         self.vue.form_msg = "";
     };
 
+    function get_search_url(key) {
+        var pp = {
+            key: key
+        };
+        return search_url + "?" + $.param(pp);
+    }
+
+    self.search = function (key) {
+        $.getJSON(get_search_url(key), function (data) {
+            self.vue.threads = data.threads;
+            self.vue.thread_has_more = false;
+            enumerate(self.vue.threads);
+            self.vue.form_search = "";
+        });
+    };
+
     // Complete as needed.
     self.vue = new Vue({
         el: "#vue-div",
@@ -275,6 +306,7 @@ var app = function() {
             masgs: [],
             logged_in: false,
             has_more: false,
+            in_rev: false,
             thread_has_more: false,
             inbox_has_more: false,
             new_msg: false,
@@ -283,6 +315,7 @@ var app = function() {
             form_thread_category: [],
             form_thread_temp: "",
             form_msg: "",
+            form_search: "",
             curr_thread_id: -1,
             curr_thread_title: "",
             curr_thread_cate: [],
@@ -292,6 +325,8 @@ var app = function() {
         methods: {
             get_posts: self.get_posts,
             get_more: self.get_more,
+            asc_get: self.asc_get,
+            dsc_get: self.dsc_get,
             thread_get_more: self.thread_get_more,
             get_user_data: self.get_user_data,
             user_get_more: self.user_get_more,
@@ -309,7 +344,8 @@ var app = function() {
             inbox_get_more: self.inbox_get_more,
             send_msg_button: self.send_msg_button,
             send_msg: self.send_msg,
-            cancel_send_msg: self.cancel_send_msg
+            cancel_send_msg: self.cancel_send_msg,
+            search: self.search
         }
 
     });
