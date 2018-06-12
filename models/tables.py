@@ -26,7 +26,9 @@ db.define_table('thread',
                 Field('category', 'text'),
                 Field('updated_on', 'datetime', update=datetime.datetime.utcnow()),
                 Field('created_by', default=get_user_email()),
-                Field('is_closed', 'boolean', default=False)
+                Field('team_list', 'text', default=get_user_email()),
+                Field('is_closed', 'boolean', default=False),
+                Field('is_private', 'boolean', default=False)
                 )
 
 db.define_table('user_msg',
@@ -47,6 +49,7 @@ db.thread.updated_on.writable = db.thread.updated_on.readable = False
 db.thread.id.writable = db.thread.id.readable = False
 db.thread.created_by.writable = db.thread.created_by.readable = False
 db.thread.is_closed.writable = db.thread.is_closed.readable = False
+db.thread.is_private.writable = db.thread.is_private.readable = False
 
 db.user_msg.sent_on.writable = db.user_msg.sent_on.readable = False
 db.user_msg.id.writable = db.user_msg.id.readable = False

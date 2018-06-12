@@ -26,7 +26,11 @@ def get_posts():
     thread_title = t.title
     thread_cate = t.category
     thread_own = t.created_by
-    return response.json(dict(posts=posts, looged_in=logged_in, has_more=has_more, thread_title=thread_title, thread_cate=thread_cate, thread_own=thread_own))
+    thread_team = t.team_list.split(',')
+    thread_closed = t.is_closed
+    thread_private = t.is_private
+    return response.json(dict(posts=posts, looged_in=logged_in, has_more=has_more, thread_title=thread_title, thread_cate=thread_cate,
+                              thread_own=thread_own, thread_team=thread_team, thread_closed=thread_closed, thread_private=thread_private))
 
 
 def get_posts_rev():
@@ -70,7 +74,10 @@ def get_threads():
                 id = r.id,
                 title = r.title,
                 category = r.category.split(','),
-                date = r.updated_on
+                team = r.team_list.split(','),
+                date = r.updated_on,
+                is_closed = r.is_closed,
+                is_private = r.is_private
             )
             threads.append(m)
         else:
@@ -139,6 +146,17 @@ def create_thread():
         category = m.category
     )
     return response.json(dict(thread=thread))
+
+
+def delete_thread():
+    thread_id = request.vars.thread_id
+    db(db.thread.id == thread_id).delete()
+    db(db.post.thread_id == thread_id).delete()
+
+    #for i, r in enumerate(rows):
+        #r.delete()
+
+    return "ok"
 
 
 def check_inbox():

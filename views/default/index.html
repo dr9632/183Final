@@ -13,6 +13,7 @@
     var user_data_url = "{{=URL('api', 'get_user_data', hash_vars=False)}}";
     var create_thread_url = "{{=URL('api', 'create_thread', user_signature=True)}}";
     var add_post_url = "{{=URL('api', 'add_post', user_signature=True)}}";
+    var delete_thread_url = "{{=URL('api', 'delete_thread', hash_vars=True)}}";
     var check_inbox_url = "{{=URL('api', 'check_inbox', user_signature=True)}}";
     var send_msg_url = "{{=URL('api', 'send_msg', user_signature=True)}}";
     var update_inbox_url = "{{=URL('api', 'update_inbox', user_signature=True)}}";
@@ -33,9 +34,12 @@
                     </div>
                     {{if auth.user:}}
                     <div class="quarter right" v-if="curr_thread_id > -1" style="padding-top: 56px">
-                        <button v-if="!is_adding" class="btn right" v-on:click="add_post_button()">
+                        <button v-if="!is_adding" class="btn" v-on:click="add_post_button()">
                             <i class="fa fa-plus"></i> Continue this story
                         </button>
+                        <a href="#delete_form"><button v-if="auth_user==curr_thread_own" class="btn" v-on:click="delete_thread_button()">
+                            <i class="fa fa-trash-o"></i> Discard this story
+                        </button></a>
                     </div>
                     {{pass}}
                     <!-- USER VIEW HEADER -->
@@ -68,6 +72,18 @@
                             </div>
                         </div>
                     </div>
+                    <!-- DELETE CONFIRM FORM -->
+                    <div class="modal" id="delete_form" v-if="is_deleting">
+                        <div class="third rounded white padded">
+                            <h3><i class="fa fa-trash"></i> Discard the Story</h3>
+                            Once you delete the stroy thread, all the story will be gone forever!<br/>
+                            Are you sure you want to delete it?<br/>
+                            <div class="center">
+                                <a class="btn" v-on:click="delete_thread(curr_thread_id)">YES</a>
+                                <a class="close btn" v-on:click="cancel_delete_thread()">NO</a>
+                            </div>
+                        </div>
+                    </div>
                 </div><br/>
                 <!-- Add form -->
                 <div v-if="is_adding" id="add_post_div">
@@ -97,49 +113,59 @@
                     <button class="rounded" v-on:click="get_posts(curr_thread_id)"><i class="fa fa-refresh"></i></button>
                 </div>
 
-                <div class="fill" v-for="post in posts">
-                    <!-- Post print -->
-                    <div class="post" v-bind:id="post._idx">
-                        <div class="post_content" style="white-space: pre-wrap; overflow-wrap: break-word; line-height: 125%">${post.content}</div>
-                        <div class="post_author" v-if="!is_viewing_user"><i class="fa fa-user" style="padding-right: 3px;"></i>
-                            <ul class="menu dark right" v-if="post.user_email!=auth_user">
-                                <li><b>${post.user_name}</b>
-                                    <ul>
-                                        {{if auth.user:}}
-                                        <li><a href="#send_form" v-on:click="send_msg_button()">Send message</a></li>
-                                        {{pass}}
-                                        <li><a v-on:click="get_user_data(post.user_email)">Other posts</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                            <span v-else><b>${post.user_name}</b></span>
-                        </div>
-                    </div>
-                    <!-- Send form -->
-                    <div class="modal" id="send_form" v-if="is_sending">
-                        <div class="third rounded white padded">
-                            <h3><i class="fa fa-envelope"></i> Send a Message</h3>
-                            To: ${post.user_name}<br/>
-                            <form action="#" v-on:submit.prevent="send_message(post.user_email)" class="form-horizontal" enctype="multipart/form-data" method="post">
-                                <div class="form-group" id="no_table_memo__row">
-                                    <div>
-                                        <textarea class="form-control string" id="no_table_post" v-model="form_msg" placeholder="Send a nice message" type="text" onkeyup="this.style.height='26px'; this.style.height = this.scrollHeight + 'px';">
-                                        </textarea>
-                                        <span class="help-block"></span>
-                                    </div>
-                                </div>
-                            </form>
-                            <div class="right">
-                                <a class="btn" v-on:click="send_msg(post.user_email)">Send</a>
-                                <a class="close btn" v-on:click="cancel_send_msg()">Close</a>
+                <div>
+                    <div class="fill" v-for="post in posts">
+                        <!-- Post print -->
+                        <div class="post" v-bind:id="post._idx">
+                            <div class="post_content" style="white-space: pre-wrap; overflow-wrap: break-word; line-height: 125%">${post.content}</div>
+                            <div class="post_author" v-if="!is_viewing_user"><i class="fa fa-user" style="padding-right: 3px;"></i>
+                                <ul class="menu dark right" v-if="post.user_email!=auth_user">
+                                    <li><b>${post.user_name}</b>
+                                        <ul>
+                                            {{if auth.user:}}
+                                            <li><a href="#send_form" v-on:click="send_msg_button(post._idx)">Send message</a></li>
+                                            {{pass}}
+                                            <li><a v-on:click="get_user_data(post.user_email)">Other posts</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <span v-else><b>${post.user_name}</b></span>
                             </div>
                         </div>
+                        <!-- Send form -->
+                        <div class="modal" id="send_form" v-if="is_sending_idx(post._idx)">
+                            <div class="third rounded white padded">
+                                <h3><i class="fa fa-envelope"></i> Send a Message</h3>
+                                To: ${post.user_name}<br/>
+                                <form action="#" v-on:submit.prevent="send_message(post.user_email)" class="form-horizontal" enctype="multipart/form-data" method="post">
+                                    <div class="form-group" id="no_table_memo__row">
+                                        <div>
+                                            <textarea class="form-control string" id="no_table_post" v-model="form_msg" placeholder="Send a nice message" type="text" onkeyup="this.style.height='26px'; this.style.height = this.scrollHeight + 'px';">
+                                            </textarea>
+                                            <span class="help-block"></span>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div class="right">
+                                    <a class="btn" v-on:click="send_msg(post.user_email)">Send</a>
+                                    <a class="close btn" v-on:click="cancel_send_msg()">Close</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="center padded">
+                        <img v-if="!is_viewing_user && !is_creating && !is_viewing_inbox && curr_thread_id<0" src="https://hjung17.pythonanywhere.com/183Final/static/images/collab_main_logo.png" />
                     </div>
                 </div>
 
                 <!-- Get more -->
-                <div v-if="has_more" class="show_more" align="center">
+                <div v-if="has_more && !is_viewing_user" class="show_more" align="center">
                     <button class="btn btn-default rounded" v-on:click="get_more()">
+                        <i class="fa fa-ellipsis-h"></i> Load more
+                    </button>
+                </div>
+                <div v-if="has_more && is_viewing_user" class="show_more" align="center">
+                    <button class="btn btn-default rounded" v-on:click="user_get_more(curr_user_email)">
                         <i class="fa fa-ellipsis-h"></i> Load more
                     </button>
                 </div>
@@ -211,7 +237,14 @@
 
             <!-- INBOX AREA -->
             <div class="threequarters" v-if="is_viewing_inbox">
-                <h3><i class="fa fa-envelope"></i> Inbox</h3><br/>
+                <div class="container fill">
+                    <div class="threequarters">
+                        <h3><i class="fa fa-envelope"></i> Inbox</h3><br/>
+                    </div>
+                    <div class="quater right" style="padding: 32px">
+                        <button v-on:click="new_get_inbo()"><i class="fa fa-refresh"></i></button>
+                    </div>
+                </div>
                 <div v-for="msg in msgs">
                     <!-- Post print -->
                     <div class="post">

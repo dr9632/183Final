@@ -32,6 +32,7 @@ var app = function() {
             self.vue.curr_thread_id = thread_id;
             self.vue.in_rev = false;
         }
+        self.cancel_add_post();
         self.cancel_create_thread();
         self.vue.is_viewing_user = false;
         self.vue.is_viewing_inbox = false;
@@ -40,6 +41,7 @@ var app = function() {
             self.vue.has_more = data.has_more;
             self.vue.logged_in = data.logged_in;
             self.vue.curr_thread_title = data.thread_title;
+            self.vue.curr_thread_own = data.thread_own;
             if (data.thread_cate.length > 0)
                 self.vue.curr_thread_cate = data.thread_cate.split(",");
             else
@@ -104,6 +106,7 @@ var app = function() {
 
     self.get_user_data = function (email) {
         self.vue.curr_thread_id = -1;
+        self.cancel_add_post();
         self.cancel_create_thread();
         self.vue.is_viewing_user = true;
         self.vue.is_viewing_inbox = false;
@@ -156,6 +159,7 @@ var app = function() {
     };
 
     self.create_thread_button = function () {
+        self.cancel_add_post();
         self.vue.is_creating = true;
         self.vue.is_viewing_user = false;
         self.vue.is_viewing_inbox = false;
@@ -203,6 +207,39 @@ var app = function() {
         self.vue.form_thread_temp = "";
     };
 
+    self.delete_thread_button = function () {
+        self.cancel_add_post();
+        self.vue.is_viewing_user = false;
+        self.vue.is_viewing_inbox = false;
+        self.vue.is_deleting = true;
+    };
+
+    self.delete_thread = function () {
+        $.post(delete_thread_url, {thread_id: self.vue.curr_thread_id},
+            function() {
+                self.vue.is_deleting = !self.vue.is_deleting;
+                for (var i=0; i < self.vue.threads.length; i++) {
+                    if (self.vue.threads[i].id == self.vue.curr_thread_id) {
+                        self.vue.threads.splice(i, 1);
+                        i = self.vue.threads.length;
+                    }
+                }
+                enumerate(self.vue.threads);
+                self.vue.curr_thread_id = -1,
+                self.vue.curr_thread_title = "";
+                self.vue.curr_thread_cate = [];
+                self.vue.curr_thread_own = "";
+                self.vue.posts = [];
+                enumerate(self.vue.posts);
+                $.web2py.flash("Story thread deleted.");
+            }
+        )
+    };
+
+    self.cancel_delete_thread = function () {
+        self.vue.is_deleting = false;
+    };
+
     function get_check_inbox_url(start_idx, end_idx, email) {
         var pp = {
             start_idx: start_idx,
@@ -231,6 +268,7 @@ var app = function() {
     }
 
     self.print_inbox = function () {
+        self.cancel_add_post();
         self.cancel_create_thread();
         self.vue.is_viewing_user = false;
         self.vue.is_viewing_inbox = true;
@@ -245,14 +283,20 @@ var app = function() {
         var num_posts = self.vue.msgs.length;
         $.getJSON(get_check_inbox_url(num_posts, num_posts + 10, email), function (data) {
             self.vue.inbox_has_more = data.has_more;
-            self.extend(self.vue.posts, data.posts);
-            enumerate(self.vue.posts);
+            self.extend(self.vue.msgs, data.msgs);
+            enumerate(self.vue.msgs);
         });
     };
 
-    self.send_msg_button = function () {
-        // The button to add a track has been pressed.
-          self.vue.is_sending = true;
+    self.new_get_inbo = function () {
+        self.check_inbox(auth_user);
+        self.print_inbox();
+    }
+
+    self.send_msg_button = function (idx) {
+        if(idx === undefined) self.vue.temp_idx = -1;
+        else self.vue.temp_idx = idx;
+        self.vue.is_sending = true;
     };
 
     self.send_msg = function (email) {
@@ -265,13 +309,20 @@ var app = function() {
                 $.web2py.enableElement($("#send_msg_submit"));
                 self.vue.is_sending = !self.vue.is_sending;
                 self.vue.form_msg = "";
+                self.vue.temp_idx = -1;
                 $.web2py.flash("Message sent");
             });
     };
 
     self.cancel_send_msg = function () {
         self.vue.is_sending = false;
+        self.vue.temp_idx = -1;
         self.vue.form_msg = "";
+    };
+
+    self.is_sending_idx = function (idx) {
+        if(idx == self.vue.temp_idx) return true;
+        else return false;
     };
 
     function get_search_url(key) {
@@ -301,9 +352,12 @@ var app = function() {
             is_viewing_user: false,
             is_viewing_inbox: false,
             is_sending: false,
+            is_deleting: false,
+            is_closed: false,
+            is_private: false,
             posts: [],
             threads: [],
-            masgs: [],
+            msgs: [],
             logged_in: false,
             has_more: false,
             in_rev: false,
@@ -319,8 +373,11 @@ var app = function() {
             curr_thread_id: -1,
             curr_thread_title: "",
             curr_thread_cate: [],
+            curr_thread_own: "",
+            curr_thread_team: [],
             curr_user_name: "",
-            curr_user_email: ""
+            curr_user_email: "",
+            temp_idx: -1
         },
         methods: {
             get_posts: self.get_posts,
@@ -341,11 +398,16 @@ var app = function() {
             rmv_cate: self.rmv_cate,
             create_thread: self.create_thread,
             cancel_create_thread: self.cancel_create_thread,
+            delete_thread_button: self.delete_thread_button,
+            delete_thread: self.delete_thread,
+            cancel_delete_thread: self.cancel_delete_thread,
             print_inbox: self.print_inbox,
             inbox_get_more: self.inbox_get_more,
+            new_get_inbo: self.new_get_inbo,
             send_msg_button: self.send_msg_button,
             send_msg: self.send_msg,
             cancel_send_msg: self.cancel_send_msg,
+            is_sending_idx: self.is_sending_idx,
             search: self.search
         }
 
